@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: ["@nuxt/fonts"],
+  modules: ["@nuxt/fonts", "shadcn-nuxt"],
   // Enable SSG
   ssr: false,
   // Enables the development server to be discoverable by other devices when running on iOS physical devices
@@ -27,4 +27,7 @@ export default defineNuxtConfig({
   // Avoids error [unhandledRejection] EMFILE: too many open files, watch
   ignore: ["**/src-tauri/**"],
   css: ["@/assets/app.css"],
+  shadcn: {
+    prefix: "",
+  },
 });
