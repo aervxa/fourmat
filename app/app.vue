@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const dropZone = useTemplateRef("dropZone");
 const imageSource = ref("");
+const inputSelect = useTemplateRef("inputSelect");
 
 // Upload file handler
 function upload(files: File[] | FileList | null) {
@@ -37,9 +38,9 @@ const { isOverDropZone } = useDropZone(dropZone, {
 
 <template>
   <!-- Content -->
-  <main class="flex size-full flex-1 overflow-hidden p-4">
+  <main class="flex size-full flex-1 overflow-hidden">
     <!-- Image Selection/Viewer -->
-    <div class="flex-1">
+    <div class="flex-1 p-4">
       <img
         v-if="imageSource"
         :src="imageSource"
@@ -56,6 +57,7 @@ const { isOverDropZone } = useDropZone(dropZone, {
         Drag a file
         <input
           v-show="false"
+          ref="inputSelect"
           type="file"
           accept="image/*"
           @change="upload(($event.currentTarget as HTMLInputElement).files)"
@@ -64,5 +66,15 @@ const { isOverDropZone } = useDropZone(dropZone, {
     </div>
 
     <!-- Options "Sidebar" -->
+    <div class="flex w-1/4 flex-col gap-6 border-l p-4">
+      <p class="text-2xl font-bold">Image type converter</p>
+
+      <div class="flex flex-col gap-2">
+        <p class="text-xl font-semibold">Step 1</p>
+        <Button class="self-start" @click="inputSelect?.click()">
+          Select Image
+        </Button>
+      </div>
+    </div>
   </main>
 </template>
