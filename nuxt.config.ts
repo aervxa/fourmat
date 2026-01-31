@@ -30,4 +30,11 @@ export default defineNuxtConfig({
   shadcn: {
     prefix: "",
   },
+  app: {
+    head: {
+      htmlAttrs: {
+        class: "dark",
+      },
+    },
+  },
 });
