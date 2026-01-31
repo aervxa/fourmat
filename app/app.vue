@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const dropZone = useTemplateRef("dropZone");
+const imageSource = ref("");
 
 // Upload file handler
 function upload(files: File[] | FileList | null) {
@@ -8,7 +9,7 @@ function upload(files: File[] | FileList | null) {
     const file = files[0];
     // Assert file is of type image
     if (file?.type.startsWith("image/")) {
-      // TODO File is now validated.
+      imageSource.value = URL.createObjectURL(file);
     } else {
       alert("Incorrect file type.");
     }
@@ -35,11 +36,19 @@ const { isOverDropZone } = useDropZone(dropZone, {
 </script>
 
 <template>
-  <SidebarProvider style="--sidebar-width: 24rem">
-    <!-- Content -->
-    <main class="flex-1 p-4">
+  <!-- Content -->
+  <main class="flex size-full flex-1 overflow-hidden p-4">
+    <!-- Image Selection/Viewer -->
+    <div class="flex-1">
+      <img
+        v-if="imageSource"
+        :src="imageSource"
+        alt="uploaded image"
+        class="bg-muted size-full rounded-xl object-contain"
+      />
       <!-- Upload region -->
       <label
+        v-else
         ref="dropZone"
         class="bg-muted/60 hover:border-primary/40 hover:bg-muted/80 flex size-full cursor-pointer flex-col items-center-safe justify-center-safe rounded-xl border-2 border-dashed"
         :class="[isOverDropZone && 'border-primary/40 bg-muted/80!']"
@@ -52,15 +61,8 @@ const { isOverDropZone } = useDropZone(dropZone, {
           @change="upload(($event.currentTarget as HTMLInputElement).files)"
         />
       </label>
-    </main>
+    </div>
 
-    <!-- Sidebar -->
-    <Sidebar side="right">
-      <SidebarHeader>header</SidebarHeader>
-      <SidebarContent class="bg-muted grid place-content-center">
-        content
-      </SidebarContent>
-      <SidebarFooter>footer</SidebarFooter>
-    </Sidebar>
-  </SidebarProvider>
+    <!-- Options "Sidebar" -->
+  </main>
 </template>
