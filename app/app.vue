@@ -2,25 +2,27 @@
 const dropZone = useTemplateRef("dropZone");
 
 // Upload file handler
-function upload(file: File) {
-  /* on file receival */
-  console.log(file);
-}
-
-// Select file handler
-function select(event: Event) {
-  // Extract files from target
-  const files = (event.currentTarget as HTMLInputElement).files;
+function upload(files: File[] | FileList | null) {
+  // Assert existence of just one file
   if (files && files.length == 1) {
-    // SAFETY: files is File[], TypeScript isn't smart enough to know of the .length check and indexing number
-    const file = files[0]!;
-    if (file.type.startsWith("image/")) {
-      upload(file);
+    const file = files[0];
+    // Assert file is of type image
+    if (file?.type.startsWith("image/")) {
+      // TODO File is now validated.
     } else {
-      alert("Incorrect file type, please select an image file.");
+      alert("Incorrect file type.");
     }
   } else {
-    alert("Couldn't receive file via select, please try again.");
+    alert("Upload failed.");
+    // `files` will be an Array if dropped, or a FileList if selected.
+    console.error(
+      "Couldn't receive file from ",
+      files instanceof Array
+        ? "drop"
+        : files instanceof FileList
+          ? "select"
+          : "_", // _ would mean files is null
+    );
   }
 }
 
@@ -28,14 +30,7 @@ function select(event: Event) {
 const { isOverDropZone } = useDropZone(dropZone, {
   dataTypes: ["image"],
   multiple: false,
-  onDrop: (files) => {
-    if (files && files.length == 1) {
-      // SAFETY: files is File[], TypeScript isn't smart enough to know of the .length check and indexing number
-      upload(files[0]!);
-    } else {
-      alert("Couldn't receive file via drag, please try selecting it.");
-    }
-  },
+  onDrop: upload,
 });
 </script>
 
@@ -50,7 +45,12 @@ const { isOverDropZone } = useDropZone(dropZone, {
         :class="[isOverDropZone && 'border-primary/40 bg-muted/80!']"
       >
         Drag a file
-        <input v-show="false" type="file" accept="image/*" @change="select" />
+        <input
+          v-show="false"
+          type="file"
+          accept="image/*"
+          @change="upload(($event.currentTarget as HTMLInputElement).files)"
+        />
       </label>
     </main>
 
