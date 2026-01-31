@@ -114,10 +114,16 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   html, body {
-    /*@apply h-full*/
+    @apply h-full
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+#__nuxt {
+  display: contents;
 }
