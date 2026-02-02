@@ -5,42 +5,78 @@ import type { UnlistenFn } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc } from "@tauri-apps/api/core";
 
-const dragActive = ref(false);
-let unlistenDragDropEvent: UnlistenFn;
-
-onMounted(async () => {
-  unlistenDragDropEvent = await getCurrentWebviewWindow().onDragDropEvent(
-    (event) => {
-      // Keep bool true during enter/over (resets on drop/leave)
-      dragActive.value =
-        event.payload.type == "enter" || event.payload.type == "over";
-
-      // File(s) dropped
-      if (event.payload.type == "drop") {
-        // TODO file dropped
-        console.log(event.payload.paths);
-      }
-    },
-  );
-});
-onUnmounted(async () => {
-  unlistenDragDropEvent();
-});
-
-function save() {
-  // TODO Save file top output dir
-}
+const supportedExtensions = [
+  "avif",
+  "bmp",
+  "gif",
+  "jpg",
+  "jpeg",
+  "png",
+  "webp",
+];
 
 const imagePath = ref("");
-
-function select() {
+function selectImage() {
   open({
     title: "Select an image",
+    filters: [
+      {
+        name: "Supported Images",
+        extensions: supportedExtensions,
+      },
+    ],
   }).then((path) => {
     // Set image path
     path && (imagePath.value = convertFileSrc(path));
   });
 }
+
+const outputPath = ref("");
+function setOutputDir() {
+  open({
+    title: "Select output folder",
+    directory: true,
+  }).then((path) => {
+    // Set image path
+    path && (outputPath.value = path);
+  });
+}
+
+// TODO Call Rust to modify accordingly and save image
+function save() {}
+
+/* File drag drop
+ * START */
+const dragActive = ref(false);
+let unlistenDragDropEvent: UnlistenFn;
+onMounted(async () => {
+  unlistenDragDropEvent = await getCurrentWebviewWindow().onDragDropEvent(
+    ({ payload }) => {
+      // Keep bool true during enter/over (resets on drop/leave)
+      dragActive.value = payload.type == "enter" || payload.type == "over";
+
+      // File(s) dropped
+      if (payload.type == "drop") {
+        // Asserts that file(s) dropped is 1
+        if (payload.paths.length == 1) {
+          // SAFETY: paths[0] isn't undefined after the length check, and -1 will always return in this case
+          const extension = payload.paths[0]!.split(".").at(-1)!;
+          if (supportedExtensions.includes(extension)) {
+            imagePath.value = convertFileSrc(payload.paths[0]!);
+          } else {
+            alert("Format not supported");
+          }
+        } else {
+          alert("Please select only one file");
+        }
+      }
+    },
+  );
+});
+onUnmounted(async () => {
+  unlistenDragDropEvent && unlistenDragDropEvent();
+});
+/* END */
 </script>
 
 <template>
@@ -55,7 +91,7 @@ function select() {
       />
       <!-- Upload region -->
       <div
-        @click="select()"
+        @click="selectImage()"
         v-else
         ref="dropZone"
         class="bg-muted/60 hover:border-primary/40 hover:bg-muted/80 relative flex size-full cursor-pointer flex-col items-center-safe justify-center-safe gap-4 rounded-xl border-2 border-dashed p-4"
@@ -66,20 +102,19 @@ function select() {
         <p
           class="absolute bottom-4 max-w-prose text-center font-mono text-sm leading-relaxed opacity-40"
         >
-          Supported files: AVIF, BMP, DDS, OpenEXR, Farbfeld, GIF, HDR, ICO,
-          JPEG, PNG, PNM, QOI, TGA, TIFF, WebP
+          Supported formats: &nbsp; AVIF, BMP, GIF, JPG, JPEG, PNG, WebP
         </p>
       </div>
     </div>
 
     <!-- Options "Sidebar" -->
-    <div class="flex w-1/4 flex-col gap-6 border-l p-4">
+    <div class="flex w-1/4 flex-col gap-6 overflow-auto border-l p-4 pb-8">
       <p class="text-2xl font-bold">Image type converter</p>
 
       <!-- Step 1: Select Image -->
       <div class="flex flex-col gap-2">
         <p class="text-xl font-semibold">Step 1</p>
-        <Button class="self-start" variant="secondary" @click="select()">
+        <Button class="self-start" variant="secondary" @click="selectImage()">
           Select Image
         </Button>
       </div>
@@ -107,10 +142,12 @@ function select() {
       <div class="flex flex-col gap-2">
         <p class="text-xl font-semibold">Step 3</p>
         <p class="text-sm">Defaults to image's path</p>
-        <!-- TODO Select input for selecting folder -->
-        <Button class="self-start" variant="secondary" @click="setDir">
+        <Button class="self-start" variant="secondary" @click="setOutputDir">
           Set Output Folder
         </Button>
+        <p v-if="outputPath" class="font-mono text-sm wrap-anywhere opacity-40">
+          {{ outputPath }}
+        </p>
       </div>
 
       <!-- Step 4: Fourmat (Format and Save) -->
