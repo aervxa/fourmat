@@ -1,7 +1,30 @@
 <script setup lang="ts">
 import { Image, Cpu } from "lucide-vue-next";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import type { UnlistenFn } from "@tauri-apps/api/event";
 
-const dropZone = useTemplateRef("dropZone");
+const dragActive = ref(false);
+let unlistenDragDropEvent: UnlistenFn;
+
+onMounted(async () => {
+  unlistenDragDropEvent = await getCurrentWebviewWindow().onDragDropEvent(
+    (event) => {
+      // Keep bool true during enter/over (resets on drop/leave)
+      dragActive.value =
+        event.payload.type == "enter" || event.payload.type == "over";
+
+      // File(s) dropped
+      if (event.payload.type == "drop") {
+        // TODO file dropped
+        console.log(event.payload.paths);
+      }
+    },
+  );
+});
+onUnmounted(async () => {
+  unlistenDragDropEvent();
+});
+
 const imageSource = ref("");
 const inputSelect = useTemplateRef("inputSelect");
 
@@ -11,39 +34,32 @@ function save() {
 
 // Upload file handler
 function upload(files: File[] | FileList | null) {
-  // Assert existence of just one file
-  if (files && files.length == 1) {
-    const file = files[0];
-    // Assert file is of type image
-    if (file?.type.startsWith("image/")) {
-      imageSource.value = URL.createObjectURL(file);
-    } else {
-      alert("Incorrect file type.");
-    }
-  } else {
-    alert("Upload failed.");
-    // `files` will be an Array if dropped, or a FileList if selected.
-    console.error(
-      "Couldn't receive file from ",
-      files instanceof Array
-        ? "drop"
-        : files instanceof FileList
-          ? "select"
-          : "_", // _ would mean files is null
-    );
-  }
+  // // Assert existence of just one file
+  // if (files && files.length == 1) {
+  //   const file = files[0];
+  //   // Assert file is of type image
+  //   if (file?.type.startsWith("image/")) {
+  //     imageSource.value = URL.createObjectURL(file);
+  //     console.log(imageSource.value);
+  //   } else {
+  //     alert("Incorrect file type.");
+  //   }
+  // } else {
+  //   alert("Upload failed.");
+  //   // `files` will be an Array if dropped, or a FileList if selected.
+  //   console.error(
+  //     "Couldn't receive file from ",
+  //     files instanceof Array
+  //       ? "drop"
+  //       : files instanceof FileList
+  //         ? "select"
+  //         : "_", // _ would mean files is null
+  //   );
+  // }
 }
-
-// Drop zone init
-const { isOverDropZone } = useDropZone(dropZone, {
-  dataTypes: ["image"],
-  multiple: false,
-  onDrop: upload,
-});
 </script>
 
 <template>
-  <!-- Content -->
   <main class="flex size-full flex-1 overflow-hidden">
     <!-- Image Selection/Viewer -->
     <div class="flex-1 p-4">
@@ -58,7 +74,7 @@ const { isOverDropZone } = useDropZone(dropZone, {
         v-else
         ref="dropZone"
         class="bg-muted/60 hover:border-primary/40 hover:bg-muted/80 relative flex size-full cursor-pointer flex-col items-center-safe justify-center-safe gap-4 rounded-xl border-2 border-dashed p-4"
-        :class="[isOverDropZone && 'border-primary/40 bg-muted/80!']"
+        :class="[dragActive && 'border-primary/40 bg-muted/80!']"
       >
         <Image :size="64" />
         <span class="text-2xl font-semibold">Drag and drop any image</span>
@@ -118,6 +134,7 @@ const { isOverDropZone } = useDropZone(dropZone, {
         <p class="text-xl font-semibold">Step 3</p>
         <p class="text-sm">Defaults to image's path</p>
         <!-- TODO Select input for selecting folder -->
+        <Input type="file" webkitdirectory />
       </div>
 
       <!-- Step 4: Fourmat (Format and Save) -->
