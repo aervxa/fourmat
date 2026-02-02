@@ -2,6 +2,8 @@
 import { Image, Cpu } from "lucide-vue-next";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import type { UnlistenFn } from "@tauri-apps/api/event";
+import { open } from "@tauri-apps/plugin-dialog";
+import { convertFileSrc } from "@tauri-apps/api/core";
 
 const dragActive = ref(false);
 let unlistenDragDropEvent: UnlistenFn;
@@ -25,37 +27,19 @@ onUnmounted(async () => {
   unlistenDragDropEvent();
 });
 
-const imageSource = ref("");
-const inputSelect = useTemplateRef("inputSelect");
-
 function save() {
   // TODO Save file top output dir
 }
 
-// Upload file handler
-function upload(files: File[] | FileList | null) {
-  // // Assert existence of just one file
-  // if (files && files.length == 1) {
-  //   const file = files[0];
-  //   // Assert file is of type image
-  //   if (file?.type.startsWith("image/")) {
-  //     imageSource.value = URL.createObjectURL(file);
-  //     console.log(imageSource.value);
-  //   } else {
-  //     alert("Incorrect file type.");
-  //   }
-  // } else {
-  //   alert("Upload failed.");
-  //   // `files` will be an Array if dropped, or a FileList if selected.
-  //   console.error(
-  //     "Couldn't receive file from ",
-  //     files instanceof Array
-  //       ? "drop"
-  //       : files instanceof FileList
-  //         ? "select"
-  //         : "_", // _ would mean files is null
-  //   );
-  // }
+const imagePath = ref("");
+
+function select() {
+  open({
+    title: "Select an image",
+  }).then((path) => {
+    // Set image path
+    path && (imagePath.value = convertFileSrc(path));
+  });
 }
 </script>
 
@@ -64,34 +48,28 @@ function upload(files: File[] | FileList | null) {
     <!-- Image Selection/Viewer -->
     <div class="flex-1 p-4">
       <img
-        v-if="imageSource"
-        :src="imageSource"
+        v-if="imagePath"
+        :src="imagePath"
         alt="uploaded image"
         class="bg-muted size-full rounded-xl object-contain"
       />
       <!-- Upload region -->
-      <label
+      <div
+        @click="select()"
         v-else
         ref="dropZone"
         class="bg-muted/60 hover:border-primary/40 hover:bg-muted/80 relative flex size-full cursor-pointer flex-col items-center-safe justify-center-safe gap-4 rounded-xl border-2 border-dashed p-4"
         :class="[dragActive && 'border-primary/40 bg-muted/80!']"
       >
         <Image :size="64" />
-        <span class="text-2xl font-semibold">Drag and drop any image</span>
-        <span
+        <p class="text-2xl font-semibold">Drag and drop any image</p>
+        <p
           class="absolute bottom-4 max-w-prose text-center font-mono text-sm leading-relaxed opacity-40"
         >
           Supported files: AVIF, BMP, DDS, OpenEXR, Farbfeld, GIF, HDR, ICO,
           JPEG, PNG, PNM, QOI, TGA, TIFF, WebP
-        </span>
-        <input
-          v-show="false"
-          ref="inputSelect"
-          type="file"
-          accept="image/*"
-          @change="upload(($event.currentTarget as HTMLInputElement).files)"
-        />
-      </label>
+        </p>
+      </div>
     </div>
 
     <!-- Options "Sidebar" -->
@@ -101,11 +79,7 @@ function upload(files: File[] | FileList | null) {
       <!-- Step 1: Select Image -->
       <div class="flex flex-col gap-2">
         <p class="text-xl font-semibold">Step 1</p>
-        <Button
-          class="self-start"
-          variant="secondary"
-          @click="inputSelect?.click()"
-        >
+        <Button class="self-start" variant="secondary" @click="select()">
           Select Image
         </Button>
       </div>
@@ -134,7 +108,9 @@ function upload(files: File[] | FileList | null) {
         <p class="text-xl font-semibold">Step 3</p>
         <p class="text-sm">Defaults to image's path</p>
         <!-- TODO Select input for selecting folder -->
-        <Input type="file" webkitdirectory />
+        <Button class="self-start" variant="secondary" @click="setDir">
+          Set Output Folder
+        </Button>
       </div>
 
       <!-- Step 4: Fourmat (Format and Save) -->
