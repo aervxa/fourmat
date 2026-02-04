@@ -3,7 +3,7 @@ import { Image, Cpu } from "lucide-vue-next";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import type { UnlistenFn } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
-import { convertFileSrc } from "@tauri-apps/api/core";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 
 const supportedExtensions = [
   "avif",
@@ -27,23 +27,42 @@ function selectImage() {
     ],
   }).then((path) => {
     // Set image path
-    path && (imagePath.value = convertFileSrc(path));
+    imagePath.value = path || "";
   });
 }
 
-const outputPath = ref("");
+const outputDir = ref("");
 function setOutputDir() {
   open({
     title: "Select output folder",
     directory: true,
   }).then((path) => {
     // Set image path
-    path && (outputPath.value = path);
+    path && (outputDir.value = path);
   });
 }
 
-// TODO Call Rust to modify accordingly and save image
-function save() {}
+const toFormat = ref("");
+const isSaving = ref(false);
+// Call Rust to modify image accordingly and save it
+function save() {
+  isSaving.value = true;
+  invoke("convert", {
+    path: imagePath.value,
+    toFormat: toFormat.value,
+    outputDir: outputDir.value,
+  })
+    .then(() => {
+      // Image convert succeeded
+    })
+    .catch((err) => {
+      // Image convert failed
+      console.error(err);
+    })
+    .finally(() => {
+      isSaving.value = false;
+    });
+}
 
 /* File drag drop
  * START */
@@ -85,7 +104,7 @@ onUnmounted(async () => {
     <div class="flex-1 p-4">
       <img
         v-if="imagePath"
-        :src="imagePath"
+        :src="convertFileSrc(imagePath)"
         alt="uploaded image"
         class="bg-muted size-full rounded-xl object-contain"
       />
@@ -123,7 +142,7 @@ onUnmounted(async () => {
       <div class="flex flex-col gap-2">
         <p class="text-xl font-semibold">Step 2</p>
         <p class="text-sm">Select format to convert to</p>
-        <Select>
+        <Select v-model="toFormat">
           <SelectTrigger>
             <SelectValue placeholder="Select Format" />
           </SelectTrigger>
@@ -145,8 +164,8 @@ onUnmounted(async () => {
         <Button class="self-start" variant="secondary" @click="setOutputDir">
           Set Output Folder
         </Button>
-        <p v-if="outputPath" class="font-mono text-sm wrap-anywhere opacity-40">
-          {{ outputPath }}
+        <p v-if="outputDir" class="font-mono text-sm wrap-anywhere opacity-40">
+          {{ outputDir }}
         </p>
       </div>
 

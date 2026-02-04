@@ -3,6 +3,11 @@ use std::path::{Path, PathBuf};
 
 #[tauri::command]
 pub fn convert(path: String, to_format: String, output_dir: String) -> Result<(), String> {
+    println!(
+        "received request to convert:\n\tpath:{}\n\tto_format:{}\n\toutput_dir:{}\n",
+        path, to_format, output_dir
+    );
+
     let file_stem = Path::new(&path)
         .file_stem()
         .and_then(|s| s.to_str())
