@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import "vue-sonner/style.css";
 import { Image, Cpu } from "lucide-vue-next";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import type { UnlistenFn } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
+import { toast } from "vue-sonner";
 
 const supportedExtensions = [
   "avif",
@@ -43,25 +45,36 @@ function setOutputDir() {
 }
 
 const toFormat = ref("");
-const isSaving = ref(false);
+const isSaving = ref(false); // bool to disable save button while saving
 // Call Rust to modify image accordingly and save it
 function save() {
-  isSaving.value = true;
-  invoke("convert", {
-    path: imagePath.value,
-    toFormat: toFormat.value,
-    outputDir: outputDir.value,
-  })
-    .then(() => {
-      // Image convert succeeded
-    })
-    .catch((err) => {
-      // Image convert failed
-      console.error(err);
-    })
-    .finally(() => {
-      isSaving.value = false;
-    });
+  // Verify required steps are complete
+  if (!imagePath.value) {
+    toast.error("Please upload a file");
+  } else if (!toFormat.value) {
+    toast.error("Please select a format to convert to");
+  } else {
+    isSaving.value = true;
+
+    toast.promise(
+      invoke("convert", {
+        path: imagePath.value,
+        toFormat: toFormat.value,
+        outputDir: outputDir.value,
+      }),
+      {
+        loading: "Converting image...",
+        success: "Image converted!",
+        error: (err: string) => {
+          console.error(err);
+          return `Failed with error: ${err}`;
+        },
+        finally: () => {
+          isSaving.value = false;
+        },
+      },
+    );
+  }
 }
 
 /* File drag drop
@@ -172,11 +185,12 @@ onUnmounted(async () => {
       <!-- Step 4: Fourmat (Format and Save) -->
       <div class="flex flex-col gap-2">
         <p class="text-xl font-semibold">Step 4</p>
-        <Button class="self-start" @click="save">
+        <Button class="self-start" @click="save" :disabled="isSaving">
           <Cpu />
           Fourmat
         </Button>
       </div>
     </div>
   </main>
+  <Toaster richColors :theme="$colorMode.value == 'dark' ? 'dark' : 'light'" />
 </template>
