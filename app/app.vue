@@ -6,7 +6,7 @@ import type { UnlistenFn } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { toast } from "vue-sonner";
-import { Check, X } from "lucide-vue-next";
+import { Check, X, FolderInput, ImagePlus, ImageUp } from "lucide-vue-next";
 
 const supportedExtensions = [
   "avif",
@@ -110,17 +110,40 @@ onUnmounted(async () => {
   unlistenDragDropEvent && unlistenDragDropEvent();
 });
 /* END */
+
+// CONSTANTS
+const TITLE = "Image format converter";
 </script>
 
 <template>
-  <main class="flex size-full flex-1 overflow-hidden">
+  <main class="flex size-full flex-1 overflow-hidden max-md:flex-col">
+    <!-- Title + Options Header (for small screens without sidebar) -->
+    <div class="flex flex-wrap items-center-safe justify-between gap-4 p-4">
+      <p class="text-xl font-semibold md:hidden">{{ TITLE }}</p>
+
+      <!-- Options (image select/change & output directory selection) -->
+      <div class="flex gap-2">
+        <!-- Select Image -->
+        <Button variant="secondary" @click="selectImage()">
+          <ImageUp v-if="imagePath" />
+          <ImagePlus v-else />
+        </Button>
+
+        <!-- Set Output Directory -->
+        <Button variant="secondary" size="icon" @click="setOutputDir">
+          <FolderInput />
+        </Button>
+      </div>
+    </div>
+
     <!-- Image Selection/Viewer -->
-    <div class="flex-1 p-4">
+    <div class="flex flex-1 flex-col gap-2 p-4">
+      <!-- Image preview -->
       <img
         v-if="imagePath"
         :src="convertFileSrc(imagePath)"
         alt="uploaded image"
-        class="bg-muted size-full rounded-xl object-contain"
+        class="bg-muted/80 size-full rounded-xl object-contain"
       />
       <!-- Upload region -->
       <div
@@ -140,9 +163,35 @@ onUnmounted(async () => {
       </div>
     </div>
 
+    <!-- Options "Bottom bar" (for small screens without sidebar) -->
+    <div class="flex justify-between border-t p-4 md:hidden">
+      <!-- Select Format -->
+      <Select v-model="toFormat">
+        <SelectTrigger>
+          <SelectValue placeholder="Select Format" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Formats</SelectLabel>
+            <SelectItem value="jpg">JPG</SelectItem>
+            <SelectItem value="png">PNG</SelectItem>
+            <SelectItem value="webp">WEBP</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+
+      <!-- Fourmat (Format and Save) -->
+      <Button class="self-start" @click="save" :disabled="isSaving">
+        <Cpu />
+        Fourmat
+      </Button>
+    </div>
+
     <!-- Options "Sidebar" -->
-    <div class="flex w-1/4 flex-col gap-6 overflow-auto border-l p-4 pb-8">
-      <p class="text-2xl font-bold">Image type converter</p>
+    <div
+      class="flex w-2xs flex-col gap-6 overflow-auto border-l p-4 pb-8 max-md:hidden lg:w-xs xl:w-sm"
+    >
+      <p class="text-2xl font-bold">{{ TITLE }}</p>
 
       <!-- Step 1: Select Image -->
       <div class="flex flex-col gap-2">
@@ -184,7 +233,7 @@ onUnmounted(async () => {
         </Select>
       </div>
 
-      <!-- Step 3: Select Output Directory -->
+      <!-- Step 3: Set Output Directory -->
       <div class="flex flex-col gap-2">
         <p
           class="text-xl font-semibold"
@@ -195,13 +244,12 @@ onUnmounted(async () => {
         </p>
         <p v-if="!outputDir" class="text-sm">Defaults to image's path</p>
         <div class="flex gap-2">
-          <Button class="self-start" variant="secondary" @click="setOutputDir">
+          <Button variant="secondary" @click="setOutputDir">
             <template v-if="outputDir">Change Folder</template>
             <template v-else>Set Output Folder</template>
           </Button>
           <Button
             v-if="outputDir"
-            class="self-start"
             variant="secondary"
             size="icon"
             @click="outputDir = ''"
