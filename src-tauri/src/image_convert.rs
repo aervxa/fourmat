@@ -8,7 +8,8 @@ pub fn convert(path: String, to_format: String, output_dir: String) -> Result<()
         path, to_format, output_dir
     );
 
-    let file_stem = Path::new(&path)
+    let file_path = Path::new(&path);
+    let file_stem = file_path
         .file_stem()
         .and_then(|s| s.to_str())
         .ok_or("File name couldn't be parsed from given path")?;
@@ -31,7 +32,12 @@ pub fn convert(path: String, to_format: String, output_dir: String) -> Result<()
         "webp" => ImageFormat::WebP,
         _ => return Err("Converting to format not supported".to_string()),
     };
-    let mut output_path = PathBuf::from(output_dir);
+    // Default to dir of the image file
+    let mut output_path = if output_dir.is_empty() {
+        PathBuf::from(file_path.parent().ok_or("a")?)
+    } else {
+        PathBuf::from(output_dir)
+    };
     output_path.push(file_stem);
     output_path.set_extension(to_format);
 
