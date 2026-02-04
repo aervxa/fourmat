@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: ["@nuxt/fonts", "shadcn-nuxt"],
+  modules: ["@nuxt/fonts", "shadcn-nuxt", "@nuxtjs/color-mode"],
   // Enable SSG
   ssr: false,
   // Enables the development server to be discoverable by other devices when running on iOS physical devices
@@ -29,12 +29,5 @@ export default defineNuxtConfig({
   css: ["@/assets/app.css"],
   shadcn: {
     prefix: "",
-  },
-  app: {
-    head: {
-      htmlAttrs: {
-        class: "dark",
-      },
-    },
   },
 });
