@@ -6,6 +6,7 @@ import type { UnlistenFn } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { toast } from "vue-sonner";
+import { Check, X } from "lucide-vue-next";
 
 const supportedExtensions = [
   "avif",
@@ -29,7 +30,7 @@ function selectImage() {
     ],
   }).then((path) => {
     // Set image path
-    imagePath.value = path || "";
+    path && (imagePath.value = path);
   });
 }
 
@@ -145,15 +146,28 @@ onUnmounted(async () => {
 
       <!-- Step 1: Select Image -->
       <div class="flex flex-col gap-2">
-        <p class="text-xl font-semibold">Step 1</p>
+        <p
+          class="text-xl font-semibold"
+          :class="[imagePath && 'flex items-center-safe gap-2']"
+        >
+          Step 1
+          <Check v-if="imagePath" :size="18" class="text-primary" />
+        </p>
         <Button class="self-start" variant="secondary" @click="selectImage()">
-          Select Image
+          <template v-if="imagePath">Change</template>
+          <template v-else>Select</template> Image
         </Button>
       </div>
 
       <!-- Step 2: Select Format -->
       <div class="flex flex-col gap-2">
-        <p class="text-xl font-semibold">Step 2</p>
+        <p
+          class="text-xl font-semibold"
+          :class="[toFormat && 'flex items-center-safe gap-2']"
+        >
+          Step 2
+          <Check v-if="toFormat" :size="18" class="text-primary" />
+        </p>
         <p class="text-sm">Select format to convert to</p>
         <Select v-model="toFormat">
           <SelectTrigger>
@@ -172,11 +186,29 @@ onUnmounted(async () => {
 
       <!-- Step 3: Select Output Directory -->
       <div class="flex flex-col gap-2">
-        <p class="text-xl font-semibold">Step 3</p>
-        <p class="text-sm">Defaults to image's path</p>
-        <Button class="self-start" variant="secondary" @click="setOutputDir">
-          Set Output Folder
-        </Button>
+        <p
+          class="text-xl font-semibold"
+          :class="[outputDir && 'flex items-center-safe gap-2']"
+        >
+          Step 3
+          <Check v-if="outputDir" :size="18" class="text-primary" />
+        </p>
+        <p v-if="!outputDir" class="text-sm">Defaults to image's path</p>
+        <div class="flex gap-2">
+          <Button class="self-start" variant="secondary" @click="setOutputDir">
+            <template v-if="outputDir">Change Folder</template>
+            <template v-else>Set Output Folder</template>
+          </Button>
+          <Button
+            v-if="outputDir"
+            class="self-start"
+            variant="secondary"
+            size="icon"
+            @click="outputDir = ''"
+          >
+            <X />
+          </Button>
+        </div>
         <p v-if="outputDir" class="font-mono text-sm wrap-anywhere opacity-40">
           {{ outputDir }}
         </p>
