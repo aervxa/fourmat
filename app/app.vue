@@ -9,10 +9,6 @@ import { toast } from "vue-sonner";
 import { Check, X, FolderInput, ImagePlus, ImageUp } from "lucide-vue-next";
 import { useWindowSize } from "@vueuse/core";
 
-const { width } = useWindowSize();
-
-const breakpoint = computed(() => width.value <= 768);
-
 const supportedExtensions = [
   "avif",
   "bmp",
@@ -118,13 +114,15 @@ onUnmounted(async () => {
 
 // CONSTANTS
 const TITLE = "Image format converter";
+const { width } = useWindowSize();
+const BREAKPOINT = computed(() => width.value <= 768);
 </script>
 
 <template>
   <main class="flex size-full flex-1 overflow-hidden max-md:flex-col">
     <!-- Title + Options Header (for small screens without sidebar) -->
     <div
-      v-show="breakpoint"
+      v-show="BREAKPOINT"
       class="flex flex-wrap items-center-safe justify-between gap-4 p-4"
     >
       <p class="text-xl font-semibold">{{ TITLE }}</p>
@@ -180,7 +178,7 @@ const TITLE = "Image format converter";
     </div>
 
     <!-- Options "Bottom bar" (for small screens without sidebar) -->
-    <div v-show="breakpoint" class="flex justify-between border-t p-4">
+    <div v-show="BREAKPOINT" class="flex justify-between border-t p-4">
       <!-- Select Format -->
       <Select v-model="toFormat">
         <SelectTrigger>
@@ -289,7 +287,7 @@ const TITLE = "Image format converter";
     </div>
   </main>
   <Toaster
-    :position="breakpoint ? 'top-center' : 'bottom-left'"
+    :position="BREAKPOINT ? 'top-center' : 'bottom-left'"
     richColors
     :theme="$colorMode.value == 'dark' ? 'dark' : 'light'"
   />
