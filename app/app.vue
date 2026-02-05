@@ -6,7 +6,14 @@ import type { UnlistenFn } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { toast } from "vue-sonner";
-import { Check, X, FolderInput, ImagePlus, ImageUp } from "lucide-vue-next";
+import {
+  Check,
+  X,
+  FolderInput,
+  ImagePlus,
+  ImageUp,
+  Trash2,
+} from "lucide-vue-next";
 import { useWindowSize } from "@vueuse/core";
 
 const imagePaths = ref<string[]>([]);
@@ -188,7 +195,7 @@ const SUPPORTED_EXTENSIONS_STR = SUPPORTED_EXTENSIONS.toSpliced(-1, 0, "and")
         <div
           v-for="(src, i) in imagePathsSrc"
           :key="i"
-          class="relative aspect-square overflow-clip rounded-xl bg-cover bg-center"
+          class="group relative aspect-square overflow-clip rounded-xl bg-cover bg-center"
           :style="{ backgroundImage: `url(${src})` }"
         >
           <!-- Overlay to blur the background of the container -->
@@ -201,6 +208,15 @@ const SUPPORTED_EXTENSIONS_STR = SUPPORTED_EXTENSIONS.toSpliced(-1, 0, "and")
             class="relative size-full object-contain"
             draggable="false"
           />
+          <!-- Delete button -->
+          <Button
+            variant="destructive"
+            size="icon"
+            class="animate-in fade-in-30 absolute top-2 right-2 hidden backdrop-blur-sm group-hover:flex"
+            @click="imagePaths.splice(i, 1)"
+          >
+            <Trash2 />
+          </Button>
         </div>
       </div>
       <!-- Upload region -->
