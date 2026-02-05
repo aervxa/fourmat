@@ -10,6 +10,9 @@ import { Check, X, FolderInput, ImagePlus, ImageUp } from "lucide-vue-next";
 import { useWindowSize } from "@vueuse/core";
 
 const imagePaths = ref<string[]>([]);
+const imagePathsSrc = computed(() =>
+  imagePaths.value.map((path) => convertFileSrc(path)),
+);
 
 function pushImagePaths(paths: string[] | null) {
   // if paths exist
@@ -183,7 +186,7 @@ const SUPPORTED_EXTENSIONS_STR = SUPPORTED_EXTENSIONS.toSpliced(-1, 0, "and")
         class="bg-card grid size-full auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] gap-4 overflow-auto rounded-xl p-4"
       >
         <div
-          v-for="(src, i) in imagePaths.map((path) => convertFileSrc(path))"
+          v-for="(src, i) in imagePathsSrc"
           :key="i"
           class="relative aspect-square overflow-clip rounded-xl bg-cover bg-center"
           :style="{ backgroundImage: `url(${src})` }"
