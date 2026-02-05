@@ -9,16 +9,6 @@ import { toast } from "vue-sonner";
 import { Check, X, FolderInput, ImagePlus, ImageUp } from "lucide-vue-next";
 import { useWindowSize } from "@vueuse/core";
 
-const supportedExtensions = [
-  "avif",
-  "bmp",
-  "gif",
-  "jpg",
-  "jpeg",
-  "png",
-  "webp",
-];
-
 const imagePaths = ref<string[]>([]);
 
 function pushImagePaths(paths: string[] | null) {
@@ -29,10 +19,12 @@ function pushImagePaths(paths: string[] | null) {
     paths.forEach((path) => {
       // SAFETY: index -1 will always return in this case
       const extension = path.split(".").at(-1)!;
-      if (supportedExtensions.includes(extension)) {
+      if (
+        SUPPORTED_EXTENSIONS.map((ext) => ext.toLowerCase()).includes(
+          extension.toLowerCase(),
+        )
+      ) {
         newPaths.push(path);
-      } else {
-        alert("Format not supported");
       }
     });
 
@@ -40,12 +32,16 @@ function pushImagePaths(paths: string[] | null) {
     if (newPaths.length > 0) {
       imagePaths.value = newPaths;
     }
-    // Multiple paths were given and none were valid
-    else if (paths.length > 1) {
-      alert("All files' formats are not supported");
+    // Some files are invalid
+    if (newPaths.length !== paths.length) {
+      setTimeout(() => {
+        toast.error("Couldn't upload every selected file!", {
+          description: `Supported formats: ${SUPPORTED_EXTENSIONS_STR}`,
+        });
+      });
     }
   } else {
-    alert("Please select at least one file");
+    toast.error("Please select at least one file");
   }
 }
 
@@ -55,7 +51,7 @@ function selectImage() {
     filters: [
       {
         name: "Supported Images",
-        extensions: supportedExtensions,
+        extensions: SUPPORTED_EXTENSIONS.map((ext) => ext.toLowerCase()),
       },
     ],
     multiple: true,
@@ -133,6 +129,18 @@ onUnmounted(async () => {
 const TITLE = "Image format converter";
 const { width } = useWindowSize();
 const BREAKPOINT = computed(() => width.value <= 768);
+const SUPPORTED_EXTENSIONS = [
+  "AVIF",
+  "BMP",
+  "GIF",
+  "JPG",
+  "JPEG",
+  "PNG",
+  "WebP",
+];
+const SUPPORTED_EXTENSIONS_STR = SUPPORTED_EXTENSIONS.toSpliced(-1, 0, "and")
+  .join(", ")
+  .replace("and,", "and");
 </script>
 
 <template>
@@ -189,7 +197,7 @@ const BREAKPOINT = computed(() => width.value <= 768);
         <p
           class="absolute bottom-4 max-w-prose text-center font-mono text-sm leading-relaxed opacity-40"
         >
-          Supported formats: &nbsp; AVIF, BMP, GIF, JPG, JPEG, PNG, WebP
+          Supported formats: &nbsp; {{ SUPPORTED_EXTENSIONS_STR }}
         </p>
       </div>
     </div>
