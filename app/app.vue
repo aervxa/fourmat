@@ -123,7 +123,7 @@ const TITLE = "Image format converter";
         <p class="text-xl font-semibold md:hidden">{{ TITLE }}</p>
 
         <!-- Options (image select/change & output directory selection) -->
-        <div class="flex gap-2">
+        <div class="flex gap-2 md:hidden">
           <!-- Select Image -->
           <Tooltip>
             <TooltipTrigger as-child>
