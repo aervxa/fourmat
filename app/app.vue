@@ -28,12 +28,10 @@ function pushImagePaths(paths: string[] | null) {
     // Feed valid paths into newPath
     paths.forEach((path) => {
       // SAFETY: index -1 will always return in this case
-      const extension = path.split(".").at(-1)!;
+      const extension = path.split(".").at(-1)?.toLowerCase() || "";
       if (
         // extension is supported
-        SUPPORTED_EXTENSIONS.map((ext) => ext.toLowerCase()).includes(
-          extension.toLowerCase(),
-        ) &&
+        EXTENSIONS.some((ext) => ext.toLowerCase() == extension) &&
         // not a duplicate
         !imagePaths.value.includes(path)
       ) {
@@ -63,7 +61,7 @@ function selectImage() {
     filters: [
       {
         name: "Supported Images",
-        extensions: SUPPORTED_EXTENSIONS.map((ext) => ext.toLowerCase()),
+        extensions: EXTENSIONS.map((ext) => ext.toLowerCase()),
       },
     ],
     multiple: true,
@@ -141,16 +139,8 @@ onUnmounted(async () => {
 const TITLE = "Image format converter";
 const { width } = useWindowSize();
 const BREAKPOINT = computed(() => width.value <= 768);
-const SUPPORTED_EXTENSIONS = [
-  "AVIF",
-  "BMP",
-  "GIF",
-  "JPG",
-  "JPEG",
-  "PNG",
-  "WebP",
-];
-const SUPPORTED_EXTENSIONS_STR = SUPPORTED_EXTENSIONS.toSpliced(-1, 0, "and")
+const EXTENSIONS = ["AVIF", "BMP", "GIF", "JPG", "JPEG", "PNG", "WebP"];
+const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
   .join(", ")
   .replace("and,", "and");
 </script>
@@ -234,7 +224,7 @@ const SUPPORTED_EXTENSIONS_STR = SUPPORTED_EXTENSIONS.toSpliced(-1, 0, "and")
         <p
           class="absolute bottom-4 max-w-prose text-center font-mono text-sm leading-relaxed opacity-40"
         >
-          Supported formats: &nbsp; {{ SUPPORTED_EXTENSIONS_STR }}
+          Supported EXTENSIONS: &nbsp; {{ EXTENSIONS_STR }}
         </p>
       </div>
     </div>
