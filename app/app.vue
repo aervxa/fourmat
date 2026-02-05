@@ -185,18 +185,17 @@ const SUPPORTED_EXTENSIONS_STR = SUPPORTED_EXTENSIONS.toSpliced(-1, 0, "and")
         <div
           v-for="(src, i) in imagePaths.map((path) => convertFileSrc(path))"
           :key="i"
-          class="relative aspect-square overflow-clip rounded-xl"
+          class="relative aspect-square overflow-clip rounded-xl bg-cover bg-center"
+          :style="{ backgroundImage: `url(${src})` }"
         >
-          <img
-            :src="src"
-            :alt="`uploaded_image_${i}`"
-            class="absolute size-full object-cover opacity-100 blur-sm brightness-60"
-            draggable="false"
-          />
+          <!-- Overlay to blur the background of the container -->
+          <div
+            class="absolute inset-0 backdrop-blur-sm backdrop-brightness-60"
+          ></div>
           <img
             :src="src"
             :alt="`uploaded image ${i}`"
-            class="absolute size-full object-contain"
+            class="relative size-full object-contain"
             draggable="false"
           />
         </div>
