@@ -96,7 +96,7 @@ onMounted(async () => {
           // SAFETY: paths[0] isn't undefined after the length check, and -1 will always return in this case
           const extension = payload.paths[0]!.split(".").at(-1)!;
           if (supportedExtensions.includes(extension)) {
-            imagePath.value = convertFileSrc(payload.paths[0]!);
+            imagePath.value = payload.paths[0]!;
           } else {
             alert("Format not supported");
           }
