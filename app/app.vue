@@ -176,18 +176,35 @@ const SUPPORTED_EXTENSIONS_STR = SUPPORTED_EXTENSIONS.toSpliced(-1, 0, "and")
     </div>
 
     <!-- Image Selection/Viewer -->
-    <div class="flex flex-1 flex-col gap-2 p-4">
+    <div class="flex-1 gap-2 overflow-auto p-4">
       <!-- Image preview -->
-      <img
-        v-if="imagePaths[0]"
-        :src="convertFileSrc(imagePaths[0])"
-        alt="uploaded image"
-        class="bg-muted/80 size-full rounded-xl object-contain"
-      />
+      <div
+        v-if="imagePaths.length"
+        class="bg-card grid size-full auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] gap-4 overflow-auto rounded-xl p-4"
+      >
+        <div
+          v-for="(src, i) in imagePaths.map((path) => convertFileSrc(path))"
+          :key="i"
+          class="relative aspect-square overflow-clip rounded-xl"
+        >
+          <img
+            :src="src"
+            :alt="`uploaded_image_${i}`"
+            class="absolute size-full object-cover opacity-100 blur-sm brightness-60"
+            draggable="false"
+          />
+          <img
+            :src="src"
+            :alt="`uploaded image ${i}`"
+            class="absolute size-full object-contain"
+            draggable="false"
+          />
+        </div>
+      </div>
       <!-- Upload region -->
       <div
-        @click="selectImage()"
         v-else
+        @click="selectImage()"
         ref="dropZone"
         class="bg-muted/60 hover:border-primary/40 hover:bg-muted/80 relative flex size-full cursor-pointer flex-col items-center-safe justify-center-safe gap-4 rounded-xl border-2 border-dashed p-4"
         :class="[dragActive && 'border-primary/40 bg-muted/80!']"
