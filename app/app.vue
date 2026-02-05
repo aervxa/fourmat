@@ -10,8 +10,8 @@ import {
   Check,
   X,
   FolderInput,
+  FolderPen,
   ImagePlus,
-  ImageUp,
   Trash2,
 } from "lucide-vue-next";
 import { useWindowSize } from "@vueuse/core";
@@ -160,10 +160,9 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
         <Button
           variant="secondary"
           @click="selectImage()"
-          :title="`${imagePaths.length ? 'Change' : 'Select'} Image`"
+          title="Select Images"
         >
-          <ImageUp v-if="imagePaths.length" />
-          <ImagePlus v-else />
+          <ImagePlus />
         </Button>
 
         <Button
@@ -172,7 +171,8 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
           @click="setOutputDir"
           :title="`${outputDir ? 'Change' : 'Set'} Output Folder`"
         >
-          <FolderInput />
+          <FolderPen v-if="outputDir" />
+          <FolderInput v-else />
         </Button>
       </div>
     </div>
@@ -269,8 +269,7 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
           <Check v-if="imagePaths.length" :size="18" class="text-primary" />
         </p>
         <Button class="self-start" variant="secondary" @click="selectImage()">
-          <template v-if="imagePaths.length">Change</template>
-          <template v-else>Select</template> Image
+          Select Images
         </Button>
       </div>
 
@@ -311,8 +310,8 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
         <p v-if="!outputDir" class="text-sm">Defaults to image's path</p>
         <div class="flex gap-2">
           <Button variant="secondary" @click="setOutputDir">
-            <template v-if="outputDir">Change Folder</template>
-            <template v-else>Set Output Folder</template>
+            <template v-if="outputDir">Change</template>
+            <template v-else>Set</template> Output Folder
           </Button>
           <Button
             v-if="outputDir"
