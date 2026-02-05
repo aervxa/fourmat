@@ -194,7 +194,7 @@ const SUPPORTED_EXTENSIONS_STR = SUPPORTED_EXTENSIONS.toSpliced(-1, 0, "and")
       >
         <div
           v-for="(src, i) in imagePathsSrc"
-          :key="i"
+          :key="src"
           class="group relative aspect-square overflow-clip rounded-xl bg-cover bg-center"
           :style="{ backgroundImage: `url(${src})` }"
         >
