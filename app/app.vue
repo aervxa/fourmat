@@ -30,9 +30,12 @@ function pushImagePaths(paths: string[] | null) {
       // SAFETY: index -1 will always return in this case
       const extension = path.split(".").at(-1)!;
       if (
+        // extension is supported
         SUPPORTED_EXTENSIONS.map((ext) => ext.toLowerCase()).includes(
           extension.toLowerCase(),
-        )
+        ) &&
+        // not a duplicate
+        !imagePaths.value.includes(path)
       ) {
         newPaths.push(path);
       }
@@ -40,12 +43,13 @@ function pushImagePaths(paths: string[] | null) {
 
     // Push valid paths if exists
     if (newPaths.length > 0) {
-      imagePaths.value = newPaths;
+      imagePaths.value.push(...newPaths);
     }
     // Some files are invalid
     if (newPaths.length !== paths.length) {
-      toast.error("Couldn't upload every selected file!", {
-        description: `Supported formats: ${SUPPORTED_EXTENSIONS_STR}`,
+      toast.error("Some files were skipped!", {
+        description:
+          "They were either already selected or had an unsupported format.",
       });
     }
   } else {
