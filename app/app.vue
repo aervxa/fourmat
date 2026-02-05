@@ -44,10 +44,8 @@ function pushImagePaths(paths: string[] | null) {
     }
     // Some files are invalid
     if (newPaths.length !== paths.length) {
-      setTimeout(() => {
-        toast.error("Couldn't upload every selected file!", {
-          description: `Supported formats: ${SUPPORTED_EXTENSIONS_STR}`,
-        });
+      toast.error("Couldn't upload every selected file!", {
+        description: `Supported formats: ${SUPPORTED_EXTENSIONS_STR}`,
       });
     }
   } else {
