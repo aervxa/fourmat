@@ -19,7 +19,36 @@ const supportedExtensions = [
   "webp",
 ];
 
-const imagePath = ref("");
+const imagePaths = ref<string[]>([]);
+
+function pushImagePaths(paths: string[] | null) {
+  // if paths exist
+  if (paths && paths.length > 0) {
+    const newPaths: string[] = [];
+    // Feed valid paths into newPath
+    paths.forEach((path) => {
+      // SAFETY: index -1 will always return in this case
+      const extension = path.split(".").at(-1)!;
+      if (supportedExtensions.includes(extension)) {
+        newPaths.push(path);
+      } else {
+        alert("Format not supported");
+      }
+    });
+
+    // Push valid paths if exists
+    if (newPaths.length > 0) {
+      imagePaths.value = newPaths;
+    }
+    // Multiple paths were given and none were valid
+    else if (paths.length > 1) {
+      alert("All files' formats are not supported");
+    }
+  } else {
+    alert("Please select at least one file");
+  }
+}
+
 function selectImage() {
   open({
     title: "Select an image",
@@ -29,10 +58,8 @@ function selectImage() {
         extensions: supportedExtensions,
       },
     ],
-  }).then((path) => {
-    // Set image path
-    path && (imagePath.value = path);
-  });
+    multiple: true,
+  }).then(pushImagePaths);
 }
 
 const outputDir = ref("");
@@ -51,7 +78,7 @@ const isSaving = ref(false); // bool to disable save button while saving
 // Call Rust to modify image accordingly and save it
 function save() {
   // Verify required steps are complete
-  if (!imagePath.value) {
+  if (!imagePaths.value.length) {
     toast.error("Please upload a file");
   } else if (!toFormat.value) {
     toast.error("Please select a format to convert to");
@@ -60,7 +87,7 @@ function save() {
 
     toast.promise(
       invoke("convert", {
-        path: imagePath.value,
+        path: imagePaths.value[0], // FIXME whole array of paths should be sent
         toFormat: toFormat.value,
         outputDir: outputDir.value,
       }),
@@ -91,18 +118,8 @@ onMounted(async () => {
 
       // File(s) dropped
       if (payload.type == "drop") {
-        // Asserts that file(s) dropped is 1
-        if (payload.paths.length == 1) {
-          // SAFETY: paths[0] isn't undefined after the length check, and -1 will always return in this case
-          const extension = payload.paths[0]!.split(".").at(-1)!;
-          if (supportedExtensions.includes(extension)) {
-            imagePath.value = payload.paths[0]!;
-          } else {
-            alert("Format not supported");
-          }
-        } else {
-          alert("Please select only one file");
-        }
+        // Set image paths
+        pushImagePaths(payload.paths);
       }
     },
   );
@@ -133,9 +150,9 @@ const BREAKPOINT = computed(() => width.value <= 768);
         <Button
           variant="secondary"
           @click="selectImage()"
-          :title="`${imagePath ? 'Change' : 'Select'} Image`"
+          :title="`${imagePaths.length ? 'Change' : 'Select'} Image`"
         >
-          <ImageUp v-if="imagePath" />
+          <ImageUp v-if="imagePaths.length" />
           <ImagePlus v-else />
         </Button>
 
@@ -154,8 +171,8 @@ const BREAKPOINT = computed(() => width.value <= 768);
     <div class="flex flex-1 flex-col gap-2 p-4">
       <!-- Image preview -->
       <img
-        v-if="imagePath"
-        :src="convertFileSrc(imagePath)"
+        v-if="imagePaths[0]"
+        :src="convertFileSrc(imagePaths[0])"
         alt="uploaded image"
         class="bg-muted/80 size-full rounded-xl object-contain"
       />
@@ -211,13 +228,13 @@ const BREAKPOINT = computed(() => width.value <= 768);
       <div class="flex flex-col gap-2">
         <p
           class="text-xl font-semibold"
-          :class="[imagePath && 'flex items-center-safe gap-2']"
+          :class="[imagePaths.length && 'flex items-center-safe gap-2']"
         >
           Step 1
-          <Check v-if="imagePath" :size="18" class="text-primary" />
+          <Check v-if="imagePaths.length" :size="18" class="text-primary" />
         </p>
         <Button class="self-start" variant="secondary" @click="selectImage()">
-          <template v-if="imagePath">Change</template>
+          <template v-if="imagePaths.length">Change</template>
           <template v-else>Select</template> Image
         </Button>
       </div>
