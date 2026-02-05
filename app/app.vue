@@ -7,6 +7,11 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { toast } from "vue-sonner";
 import { Check, X, FolderInput, ImagePlus, ImageUp } from "lucide-vue-next";
+import { useWindowSize } from "@vueuse/core";
+
+const { width } = useWindowSize();
+
+const breakpoint = computed(() => width.value <= 768);
 
 const supportedExtensions = [
   "avif",
@@ -119,11 +124,14 @@ const TITLE = "Image format converter";
   <TooltipProvider>
     <main class="flex size-full flex-1 overflow-hidden max-md:flex-col">
       <!-- Title + Options Header (for small screens without sidebar) -->
-      <div class="flex flex-wrap items-center-safe justify-between gap-4 p-4">
-        <p class="text-xl font-semibold md:hidden">{{ TITLE }}</p>
+      <div
+        v-show="breakpoint"
+        class="flex flex-wrap items-center-safe justify-between gap-4 p-4"
+      >
+        <p class="text-xl font-semibold">{{ TITLE }}</p>
 
         <!-- Options (image select/change & output directory selection) -->
-        <div class="flex gap-2 md:hidden">
+        <div class="flex gap-2">
           <!-- Select Image -->
           <Tooltip>
             <TooltipTrigger as-child>
@@ -185,7 +193,7 @@ const TITLE = "Image format converter";
       </div>
 
       <!-- Options "Bottom bar" (for small screens without sidebar) -->
-      <div class="flex justify-between border-t p-4 md:hidden">
+      <div v-show="breakpoint" class="flex justify-between border-t p-4">
         <!-- Select Format -->
         <Select v-model="toFormat">
           <SelectTrigger>
@@ -297,5 +305,9 @@ const TITLE = "Image format converter";
       </div>
     </main>
   </TooltipProvider>
-  <Toaster richColors :theme="$colorMode.value == 'dark' ? 'dark' : 'light'" />
+  <Toaster
+    :position="breakpoint ? 'top-center' : 'bottom-left'"
+    richColors
+    :theme="$colorMode.value == 'dark' ? 'dark' : 'light'"
+  />
 </template>
