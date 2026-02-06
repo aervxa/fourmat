@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import "vue-sonner/style.css";
-import { Image, Cpu } from "lucide-vue-next";
+import {
+  Image,
+  Cpu,
+  Check,
+  X,
+  FolderInput,
+  FolderPen,
+  RotateCcw,
+  Trash2,
+} from "lucide-vue-next";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import type { UnlistenFn } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { toast } from "vue-sonner";
-import {
-  Check,
-  X,
-  FolderInput,
-  FolderPen,
-  ImagePlus,
-  Trash2,
-} from "lucide-vue-next";
 import { useWindowSize } from "@vueuse/core";
 
 const imagePaths = ref<string[]>([]);
@@ -112,6 +113,12 @@ function save() {
   }
 }
 
+function reset() {
+  imagePaths.value = [];
+  outputDir.value = "";
+  toFormat.value = "";
+}
+
 /* File drag drop
  * START */
 const dragActive = ref(false);
@@ -156,13 +163,15 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
 
       <!-- Options (image select/change & output directory selection) -->
       <div class="flex gap-2">
-        <!-- Select Image -->
+        <!-- Reset -->
         <Button
+          v-if="imagePaths.length"
           variant="secondary"
-          @click="selectImage()"
-          title="Select Images"
+          size="icon"
+          @click="reset()"
+          title="Reset"
         >
-          <ImagePlus />
+          <RotateCcw />
         </Button>
 
         <Button
