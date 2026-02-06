@@ -92,8 +92,8 @@ function save() {
     isSaving.value = true;
 
     toast.promise(
-      invoke("convert", {
-        path: imagePaths.value[0], // FIXME whole array of paths should be sent
+      invoke("convert_images", {
+        paths: imagePaths.value,
         toFormat: toFormat.value,
         outputDir: outputDir.value,
       }),

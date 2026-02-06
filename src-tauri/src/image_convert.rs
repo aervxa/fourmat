@@ -1,8 +1,7 @@
 use image::{ImageFormat, ImageReader};
 use std::path::{Path, PathBuf};
 
-#[tauri::command]
-pub fn convert(path: String, to_format: String, output_dir: String) -> Result<(), String> {
+fn convert_image(path: String, to_format: String, output_dir: String) -> Result<(), String> {
     println!(
         "received request to convert:\n\tpath:{}\n\tto_format:{}\n\toutput_dir:{}\n",
         path, to_format, output_dir
@@ -51,6 +50,41 @@ pub fn convert(path: String, to_format: String, output_dir: String) -> Result<()
         "Couldn't save file"
     })?;
     println!("done saved image");
+
+    Ok(())
+}
+
+#[tauri::command]
+pub fn convert_images(
+    paths: Vec<String>,
+    to_format: String,
+    output_dir: String,
+) -> Result<(), String> {
+    let mut failed_paths = Vec::new();
+
+    // convert each image
+    paths.iter().for_each(|path| {
+        if convert_image(
+            path.into(),
+            to_format.clone().into(),
+            output_dir.clone().into(),
+        )
+        .is_err()
+        {
+            // Add to failed_paths if conversion errors
+            failed_paths.push(format!("'{}'", path)); // surround path in apostrophes for readability in logs
+        }
+    });
+
+    let failed_paths_len = failed_paths.len();
+    if failed_paths_len > 0 {
+        eprintln!(
+            "Failed to convert {} images: [{}]",
+            failed_paths_len,
+            failed_paths.join(", ")
+        );
+        return Err(format!("Failed to convert {} images!", failed_paths_len));
+    }
 
     Ok(())
 }

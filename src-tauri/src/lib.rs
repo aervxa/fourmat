@@ -14,7 +14,7 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![image_convert::convert])
+        .invoke_handler(tauri::generate_handler![image_convert::convert_images])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
