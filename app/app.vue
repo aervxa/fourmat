@@ -220,9 +220,9 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
         :class="[dragActive && 'border-primary/40 bg-muted/80!']"
       >
         <Image :size="64" />
-        <p class="text-2xl font-semibold">Drag and drop any image</p>
+        <p class="text-center text-2xl font-semibold">Drop or select images</p>
         <p
-          class="absolute bottom-4 max-w-prose text-center font-mono text-sm leading-relaxed opacity-40"
+          class="absolute inset-x-0 bottom-3 mx-auto max-w-prose px-6 text-center font-mono text-sm leading-relaxed opacity-40"
         >
           Supported EXTENSIONS: &nbsp; {{ EXTENSIONS_STR }}
         </p>
