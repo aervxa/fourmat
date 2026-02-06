@@ -338,7 +338,7 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
     </div>
   </main>
   <Toaster
-    :position="BREAKPOINT ? 'top-center' : 'bottom-left'"
+    :position="BREAKPOINT ? 'top-center' : 'bottom-right'"
     richColors
     :theme="$colorMode.value == 'dark' ? 'dark' : 'light'"
   />
