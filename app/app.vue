@@ -9,6 +9,7 @@ import {
   FolderPen,
   RotateCcw,
   Trash2,
+  Plus,
 } from "lucide-vue-next";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import type { UnlistenFn } from "@tauri-apps/api/event";
@@ -218,6 +219,16 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
           >
             <Trash2 />
           </Button>
+        </div>
+        <!-- Select more images -->
+        <div
+          @click="selectImage()"
+          class="flex aspect-square cursor-pointer flex-col items-center-safe justify-center-safe gap-4 rounded-xl border-2 border-dashed"
+        >
+          <Plus :size="64" />
+          <p class="px-4 text-center text-sm font-extralight">
+            Drop or select more images
+          </p>
         </div>
       </div>
       <!-- Upload region -->
