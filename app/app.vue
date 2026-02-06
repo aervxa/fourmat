@@ -235,7 +235,6 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
       <div
         v-else
         @click="selectImage()"
-        ref="dropZone"
         class="bg-muted/60 hover:border-primary/40 hover:bg-muted/80 relative flex size-full cursor-pointer flex-col items-center-safe justify-center-safe gap-4 rounded-xl border-2 border-dashed p-4"
         :class="[dragActive && 'border-primary/40 bg-muted/80!']"
       >
