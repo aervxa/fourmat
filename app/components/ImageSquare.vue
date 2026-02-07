@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Trash2 } from "lucide-vue-next";
 
-const props = defineProps({
+defineProps({
   deleteFn: Function,
   src: String,
   alt: String,
@@ -28,7 +28,7 @@ const props = defineProps({
       variant="destructive"
       size="icon"
       class="animate-in fade-in-30 absolute top-2 right-2 hidden backdrop-blur-sm group-hover:flex"
-      @click.stop="props.deleteFn?.()"
+      @click.stop="deleteFn?.()"
     >
       <Trash2 />
     </Button>
