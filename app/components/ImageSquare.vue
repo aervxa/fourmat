@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { Trash2 } from "lucide-vue-next";
+import type { ButtonVariants } from "~/components/ui/button";
 
 defineProps({
   deleteFn: Function,
   src: String,
   alt: String,
+  actionIcon: Function,
+  actionVariant: String as PropType<ButtonVariants["variant"]>,
 });
 </script>
 
@@ -23,14 +25,15 @@ defineProps({
       class="relative size-full object-contain"
       draggable="false"
     />
-    <!-- Delete button -->
+    <!-- Action button -->
     <Button
-      variant="destructive"
+      v-if="actionIcon"
+      :variant="actionVariant"
       size="icon"
       class="animate-in fade-in-30 absolute top-2 right-2 hidden backdrop-blur-sm group-hover:flex"
       @click.stop="deleteFn?.()"
     >
-      <Trash2 />
+      <Component :is="actionIcon" />
     </Button>
   </div>
 </template>
