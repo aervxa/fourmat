@@ -8,8 +8,8 @@ import {
   FolderInput,
   FolderPen,
   RotateCcw,
-  Trash2,
   Plus,
+  Trash2,
 } from "lucide-vue-next";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import type { UnlistenFn } from "@tauri-apps/api/event";
@@ -17,6 +17,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { toast } from "vue-sonner";
 import { useWindowSize } from "@vueuse/core";
+import ImageSquare from "~/components/ImageSquare.vue";
 
 const imagePaths = ref<string[]>([]);
 const imagePathsSrc = computed(() =>
@@ -118,6 +119,7 @@ function reset() {
   imagePaths.value = [];
   outputDir.value = "";
   toFormat.value = "";
+  transitioningImage.value = -1;
 }
 
 /* File drag drop
@@ -151,6 +153,38 @@ const EXTENSIONS = ["AVIF", "BMP", "GIF", "JPG", "JPEG", "PNG", "WebP"];
 const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
   .join(", ")
   .replace("and,", "and");
+
+const transitioningImage = ref(-1);
+const showDialog = ref(false);
+const imageTransitionName = "transitioning_image";
+async function transitionImage(i: number) {
+  /**
+   * if actual image is being transitioned, otherwise, it's a back transition,
+   * which would need to happen backwards, hence the setting after .finished
+   */
+
+  if (i >= 0) {
+    transitioningImage.value = i;
+    // wait for vue to actually update DOM
+    await nextTick();
+  }
+  async function transition() {
+    // transition code
+    showDialog.value = !showDialog.value;
+    // wait for vue to actually update DOM
+    await nextTick();
+  }
+  if (!document.startViewTransition) {
+    // Fallback for browsers that don't support the transitioning
+    transition();
+  } else {
+    document.startViewTransition(transition).finished.then(() => {
+      if (i < 0) {
+        transitioningImage.value = i;
+      }
+    });
+  }
+}
 </script>
 
 <template>
@@ -192,34 +226,54 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
       <!-- Image preview -->
       <div
         v-if="imagePaths.length"
-        class="bg-card grid size-full auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] gap-4 overflow-auto rounded-xl p-4"
+        class="bg-card relative grid size-full auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] gap-4 overflow-auto rounded-xl p-4"
       >
+        <!-- Image zoomed-in preview -->
         <div
+          v-if="showDialog"
+          @click="transitionImage(-1)"
+          class="bg-background/40 absolute inset-0 z-10 flex cursor-pointer items-center-safe justify-center-safe backdrop-blur-xs"
+        >
+          <ImageSquare
+            :src="imagePathsSrc[transitioningImage]"
+            :alt="`uploaded_image_${transitioningImage}`"
+            :delete-fn="
+              () => {
+                transitionImage(-1);
+              }
+            "
+            :action-icon="X"
+            action-variant="outline"
+            :style="{
+              viewTransitionName: imageTransitionName,
+            }"
+            class="max-w-96"
+          />
+        </div>
+
+        <!-- Image grids -->
+        <ImageSquare
           v-for="(src, i) in imagePathsSrc"
           :key="src"
-          class="group relative aspect-square overflow-clip rounded-xl bg-cover bg-center"
-          :style="{ backgroundImage: `url(${src})` }"
-        >
-          <!-- Overlay to blur the background of the container -->
-          <div
-            class="absolute inset-0 backdrop-blur-sm backdrop-brightness-60"
-          ></div>
-          <img
-            :src="src"
-            :alt="`uploaded image ${i}`"
-            class="relative size-full object-contain"
-            draggable="false"
-          />
-          <!-- Delete button -->
-          <Button
-            variant="destructive"
-            size="icon"
-            class="animate-in fade-in-30 absolute top-2 right-2 hidden backdrop-blur-sm group-hover:flex"
-            @click="imagePaths.splice(i, 1)"
-          >
-            <Trash2 />
-          </Button>
-        </div>
+          :src
+          :alt="`uploaded_image_${i}`"
+          :delete-fn="
+            () => {
+              imagePaths.splice(i, 1);
+            }
+          "
+          :action-icon="Trash2"
+          action-variant="destructive"
+          @click="transitionImage(i)"
+          class="cursor-pointer"
+          :class="[transitioningImage === i && showDialog && 'opacity-0']"
+          :style="[
+            transitioningImage === i &&
+              !showDialog && {
+                viewTransitionName: imageTransitionName,
+              },
+          ]"
+        />
         <!-- Select more images -->
         <div
           @click="selectImage()"
