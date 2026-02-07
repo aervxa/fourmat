@@ -12,7 +12,7 @@ defineProps({
   <div
     class="group relative aspect-square overflow-clip rounded-xl bg-cover bg-center"
     :style="{
-      backgroundImage: `url(${src})`,
+      backgroundImage: `url(&quot;${src}&quot;)`,
     }"
   >
     <!-- Overlay to blur the background of the container -->
