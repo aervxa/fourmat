@@ -28,7 +28,7 @@ const props = defineProps({
       variant="destructive"
       size="icon"
       class="animate-in fade-in-30 absolute top-2 right-2 hidden backdrop-blur-sm group-hover:flex"
-      @click="props.deleteFn?.()"
+      @click.stop="props.deleteFn?.()"
     >
       <Trash2 />
     </Button>
