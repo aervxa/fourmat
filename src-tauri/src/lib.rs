@@ -1,4 +1,4 @@
-mod image_convert;
+mod image_converter;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -14,7 +14,7 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![image_convert::convert_images])
+        .invoke_handler(tauri::generate_handler![image_converter::convert_images])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
