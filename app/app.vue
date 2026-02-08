@@ -341,9 +341,19 @@ async function transitionImage(i: number) {
           Step 1
           <Check v-if="imagePaths.length" :size="18" class="text-primary" />
         </p>
-        <Button class="self-start" variant="secondary" @click="selectImage()">
-          Select Images
-        </Button>
+        <div class="flex gap-2">
+          <Button class="self-start" variant="secondary" @click="selectImage()">
+            Select Images
+          </Button>
+          <Button
+            v-if="imagePaths.length"
+            variant="secondary"
+            size="icon"
+            @click="reset"
+          >
+            <RotateCcw />
+          </Button>
+        </div>
       </div>
 
       <!-- Step 2: Select Format -->
