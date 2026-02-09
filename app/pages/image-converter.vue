@@ -253,7 +253,8 @@ async function transitionImage(i: number) {
 
         <!-- Image grids -->
         <div
-          class="grid size-full auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] gap-4 overflow-auto p-4"
+          class="grid size-full auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] gap-4 p-4"
+          :class="[showDialog ? 'overflow-hidden' : 'overflow-auto']"
         >
           <ImageSquare
             v-for="(src, i) in imagePathsSrc"
