@@ -222,11 +222,11 @@ async function transitionImage(i: number) {
     </div>
 
     <!-- Image Selection/Viewer -->
-    <div class="flex-1 gap-2 overflow-auto p-4">
+    <div class="flex-1 gap-2 overflow-hidden p-4">
       <!-- Image preview -->
       <div
         v-if="imagePaths.length"
-        class="bg-card relative grid size-full auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] gap-4 overflow-auto rounded-xl p-4"
+        class="bg-card relative size-full rounded-xl"
       >
         <!-- Image zoomed-in preview -->
         <div
@@ -247,42 +247,46 @@ async function transitionImage(i: number) {
             :style="{
               viewTransitionName: imageTransitionName,
             }"
-            class="max-w-96"
+            class="max-h-full w-full max-w-96"
           />
         </div>
 
         <!-- Image grids -->
-        <ImageSquare
-          v-for="(src, i) in imagePathsSrc"
-          :key="src"
-          :src
-          :alt="`uploaded_image_${i}`"
-          :delete-fn="
-            () => {
-              imagePaths.splice(i, 1);
-            }
-          "
-          :action-icon="Trash2"
-          action-variant="destructive"
-          @click="transitionImage(i)"
-          class="cursor-pointer"
-          :class="[transitioningImage === i && showDialog && 'opacity-0']"
-          :style="[
-            transitioningImage === i &&
-              !showDialog && {
-                viewTransitionName: imageTransitionName,
-              },
-          ]"
-        />
-        <!-- Select more images -->
         <div
-          @click="selectImage()"
-          class="flex aspect-square cursor-pointer flex-col items-center-safe justify-center-safe gap-4 rounded-xl border-2 border-dashed"
+          class="grid size-full auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] gap-4 overflow-auto p-4"
         >
-          <Plus :size="64" />
-          <p class="px-4 text-center text-sm font-extralight">
-            Drop or select more images
-          </p>
+          <ImageSquare
+            v-for="(src, i) in imagePathsSrc"
+            :key="src"
+            :src
+            :alt="`uploaded_image_${i}`"
+            :delete-fn="
+              () => {
+                imagePaths.splice(i, 1);
+              }
+            "
+            :action-icon="Trash2"
+            action-variant="destructive"
+            @click="transitionImage(i)"
+            class="cursor-pointer"
+            :class="[transitioningImage === i && showDialog && 'opacity-0']"
+            :style="[
+              transitioningImage === i &&
+                !showDialog && {
+                  viewTransitionName: imageTransitionName,
+                },
+            ]"
+          />
+          <!-- Select more images -->
+          <div
+            @click="selectImage()"
+            class="flex aspect-square cursor-pointer flex-col items-center-safe justify-center-safe gap-4 rounded-xl border-2 border-dashed"
+          >
+            <Plus :size="64" />
+            <p class="px-4 text-center text-sm font-extralight">
+              Drop or select more images
+            </p>
+          </div>
         </div>
       </div>
       <!-- Upload region -->
