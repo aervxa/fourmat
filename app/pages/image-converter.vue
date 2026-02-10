@@ -119,7 +119,7 @@ function reset() {
   imagePaths.value = [];
   outputDir.value = "";
   toFormat.value = "";
-  zoomedImageIndex.value = -1; // reset animation dialog state
+  zoomedImage.value = ""; // reset animation dialog state
 }
 
 /* File drag drop
@@ -157,7 +157,7 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
 // Animations via motion
 import { motion } from "motion-v";
 const MotionImageSquare = motion.create(ImageSquare);
-const zoomedImageIndex = ref(-1);
+const zoomedImage = ref("");
 const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
 </script>
 
@@ -205,8 +205,8 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
         <!-- Image zoomed-in preview -->
         <AnimatePresence>
           <div
-            v-if="zoomedImageIndex >= 0"
-            @click="zoomedImageIndex = -1"
+            v-if="zoomedImage"
+            @click="zoomedImage = ''"
             class="absolute inset-0 z-10 flex cursor-pointer items-center-safe justify-center-safe"
           >
             <!-- Background backdrop -->
@@ -219,13 +219,13 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
             </motion.div>
 
             <MotionImageSquare
-              :src="imagePathsSrc[zoomedImageIndex]"
-              :alt="`zoomed_uploaded_image_${zoomedImageIndex}`"
+              :src="zoomedImage"
+              alt="zoomed_selected_image"
               :action-icon="X"
               action-variant="outline"
-              :action="() => (zoomedImageIndex = -1)"
+              :action="() => (zoomedImage = '')"
               class="max-h-full w-full max-w-96"
-              :layout-id="zoomedImageLayoutId(imagePathsSrc[zoomedImageIndex])"
+              :layout-id="zoomedImageLayoutId(zoomedImage)"
             />
           </div>
         </AnimatePresence>
@@ -233,7 +233,7 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
         <!-- Image grids -->
         <div
           class="grid size-full auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] gap-4 p-4"
-          :class="[zoomedImageIndex >= 0 ? 'overflow-hidden' : 'overflow-auto']"
+          :class="[zoomedImage ? 'overflow-hidden' : 'overflow-auto']"
         >
           <MotionImageSquare
             v-for="(src, i) in imagePathsSrc"
@@ -249,7 +249,7 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
             action-variant="destructive"
             class="cursor-pointer"
             :layout-id="zoomedImageLayoutId(src)"
-            @click="zoomedImageIndex = i"
+            @click="zoomedImage = src"
           />
           <!-- Select more images -->
           <div
