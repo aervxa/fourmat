@@ -225,7 +225,7 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
               :src="zoomedImage"
               alt="zoomed_selected_image"
               :action-icon="X"
-              action-variant="outline"
+              action-variant="secondary"
               :action="() => (zoomedImage = '')"
               class="absolute! max-h-full w-full max-w-96"
               :layout-id="zoomedImageLayoutId(zoomedImage)"
