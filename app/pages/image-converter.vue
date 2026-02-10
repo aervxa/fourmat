@@ -17,7 +17,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { toast } from "vue-sonner";
 import { useWindowSize } from "@vueuse/core";
-import ImageSquare from "~/components/ImageSquare.vue";
+import ImageSquare from "@/components/ImageSquare.vue";
 
 const imagePaths = ref<string[]>([]);
 const imagePathsSrc = computed(() =>
