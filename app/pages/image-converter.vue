@@ -25,8 +25,10 @@ const imagePathsSrc = computed(() =>
 );
 
 function pushImagePaths(paths: string[] | null) {
+  console.log("running bruh");
   // if paths exist
   if (paths && paths.length > 0) {
+    console.log(imagePaths.value);
     const newPaths: string[] = [];
     // Feed valid paths into newPath
     paths.forEach((path) => {
@@ -42,6 +44,7 @@ function pushImagePaths(paths: string[] | null) {
       }
     });
 
+    console.log(paths, newPaths, imagePaths.value);
     // Push valid paths if exists
     if (newPaths.length > 0) {
       imagePaths.value.push(...newPaths);
@@ -140,8 +143,8 @@ onMounted(async () => {
     },
   );
 });
-onUnmounted(async () => {
-  unlistenDragDropEvent && unlistenDragDropEvent();
+onUnmounted(() => {
+  unlistenDragDropEvent?.();
 });
 /* END */
 
