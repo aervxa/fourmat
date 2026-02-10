@@ -223,7 +223,7 @@ const zoomedImageLayoutId = (index: number) => `image_grid_${index}`;
               :alt="`zoomed_uploaded_image_${zoomedImageIndex}`"
               :action-icon="X"
               action-variant="outline"
-              :deleteFn="() => (zoomedImageIndex = -1)"
+              :action="() => (zoomedImageIndex = -1)"
               class="max-h-full w-full max-w-96"
               :layout-id="zoomedImageLayoutId(zoomedImageIndex)"
             />
@@ -240,7 +240,7 @@ const zoomedImageLayoutId = (index: number) => `image_grid_${index}`;
             :key="src"
             :src
             :alt="`uploaded_image_${i}`"
-            :delete-fn="
+            :action="
               () => {
                 imagePaths.splice(i, 1);
               }

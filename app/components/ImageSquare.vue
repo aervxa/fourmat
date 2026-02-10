@@ -2,9 +2,9 @@
 import type { ButtonVariants } from "~/components/ui/button";
 
 defineProps({
-  deleteFn: Function,
   src: String,
   alt: String,
+  action: Function,
   actionIcon: Function,
   actionVariant: String as PropType<ButtonVariants["variant"]>,
 });
@@ -31,7 +31,7 @@ defineProps({
       :variant="actionVariant"
       size="icon"
       class="animate-in fade-in-30 absolute top-2 right-2 hidden backdrop-blur-sm group-hover:flex"
-      @click.stop="deleteFn?.()"
+      @click.stop="action?.()"
     >
       <Component :is="actionIcon" />
     </Button>
