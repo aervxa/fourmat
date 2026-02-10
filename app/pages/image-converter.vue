@@ -125,6 +125,7 @@ function reset() {
 /* File drag drop
  * START */
 const dragActive = ref(false);
+const dropZone = useTemplateRef("drop-zone");
 let unlistenDragDropEvent: UnlistenFn;
 onMounted(async () => {
   unlistenDragDropEvent = await getCurrentWebviewWindow().onDragDropEvent(
@@ -134,7 +135,16 @@ onMounted(async () => {
 
       // File(s) dropped
       if (payload.type == "drop") {
-        pushImagePaths(payload.paths);
+        // Get elm at position payload was dropped at
+        const elm = document.elementFromPoint(
+          payload.position.x,
+          payload.position.y,
+        );
+
+        // Set image paths IF dropped IN dropZone
+        if (dropZone.value?.contains(elm)) {
+          pushImagePaths(payload.paths);
+        }
       }
     },
   );
@@ -224,8 +234,8 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
       </div>
     </AnimatePresence>
 
-    <!-- Image Selection/Viewer -->
-    <div class="flex-1 gap-2 overflow-hidden p-4">
+    <!-- Image Selection/Viewer + drop-zone -->
+    <div ref="drop-zone" class="flex-1 gap-2 overflow-hidden p-4">
       <!-- Image preview -->
       <div
         v-if="imagePaths.length"
