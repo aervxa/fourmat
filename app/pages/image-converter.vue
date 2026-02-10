@@ -158,7 +158,7 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
 import { motion } from "motion-v";
 const MotionImageSquare = motion.create(ImageSquare);
 const zoomedImageIndex = ref(-1);
-const zoomedImageLayoutId = (index: number) => `image_grid_${index}`;
+const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
 </script>
 
 <template>
@@ -225,7 +225,7 @@ const zoomedImageLayoutId = (index: number) => `image_grid_${index}`;
               action-variant="outline"
               :action="() => (zoomedImageIndex = -1)"
               class="max-h-full w-full max-w-96"
-              :layout-id="zoomedImageLayoutId(zoomedImageIndex)"
+              :layout-id="zoomedImageLayoutId(imagePathsSrc[zoomedImageIndex])"
             />
           </div>
         </AnimatePresence>
@@ -248,7 +248,7 @@ const zoomedImageLayoutId = (index: number) => `image_grid_${index}`;
             :action-icon="Trash2"
             action-variant="destructive"
             class="cursor-pointer"
-            :layout-id="zoomedImageLayoutId(i)"
+            :layout-id="zoomedImageLayoutId(src)"
             @click="zoomedImageIndex = i"
           />
           <!-- Select more images -->
