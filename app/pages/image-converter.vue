@@ -134,7 +134,6 @@ onMounted(async () => {
 
       // File(s) dropped
       if (payload.type == "drop") {
-        // Set image paths
         pushImagePaths(payload.paths);
       }
     },
@@ -195,6 +194,36 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
       </div>
     </div>
 
+    <!-- Image zoomed-in preview -->
+    <AnimatePresence>
+      <div
+        v-if="zoomedImage"
+        @click="zoomedImage = ''"
+        class="absolute inset-0 z-10 flex cursor-pointer items-center-safe justify-center-safe overflow-hidden p-2"
+      >
+        <!-- Background backdrop -->
+        <motion.div
+          class="bg-background/40 absolute inset-0 backdrop-blur-xs"
+          :initial="{ opacity: 0 }"
+          :animate="{ opacity: 1 }"
+          :exit="{ opacity: 0 }"
+        >
+        </motion.div>
+
+        <div class="absolute size-4/5">
+          <MotionImageSquare
+            :src="zoomedImage"
+            alt="zoomed_selected_image"
+            :action-icon="X"
+            action-variant="secondary"
+            :action="() => (zoomedImage = '')"
+            class="absolute! top-1/2 left-1/2 max-h-full w-full max-w-96 -translate-1/2"
+            :layout-id="zoomedImageLayoutId(zoomedImage)"
+          />
+        </div>
+      </div>
+    </AnimatePresence>
+
     <!-- Image Selection/Viewer -->
     <div class="flex-1 gap-2 overflow-hidden p-4">
       <!-- Image preview -->
@@ -202,34 +231,6 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
         v-if="imagePaths.length"
         class="bg-card relative size-full rounded-xl"
       >
-        <!-- Image zoomed-in preview -->
-        <AnimatePresence>
-          <div
-            v-if="zoomedImage"
-            @click="zoomedImage = ''"
-            class="absolute inset-0 z-10 flex cursor-pointer items-center-safe justify-center-safe overflow-hidden p-2"
-          >
-            <!-- Background backdrop -->
-            <motion.div
-              class="bg-background/40 absolute inset-0 backdrop-blur-xs"
-              :initial="{ opacity: 0 }"
-              :animate="{ opacity: 1 }"
-              :exit="{ opacity: 0 }"
-            >
-            </motion.div>
-
-            <MotionImageSquare
-              :src="zoomedImage"
-              alt="zoomed_selected_image"
-              :action-icon="X"
-              action-variant="secondary"
-              :action="() => (zoomedImage = '')"
-              class="absolute! max-h-full w-full max-w-96"
-              :layout-id="zoomedImageLayoutId(zoomedImage)"
-            />
-          </div>
-        </AnimatePresence>
-
         <!-- Image grids -->
         <div
           class="grid size-full auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] gap-4 p-4"
