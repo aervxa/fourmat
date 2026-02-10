@@ -207,7 +207,7 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
           <div
             v-if="zoomedImage"
             @click="zoomedImage = ''"
-            class="absolute inset-0 z-10 flex cursor-pointer items-center-safe justify-center-safe"
+            class="absolute inset-0 z-10 flex cursor-pointer items-center-safe justify-center-safe overflow-hidden p-2"
           >
             <!-- Background backdrop -->
             <motion.div
@@ -224,7 +224,7 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
               :action-icon="X"
               action-variant="outline"
               :action="() => (zoomedImage = '')"
-              class="max-h-full w-full max-w-96"
+              class="absolute! max-h-full w-full max-w-96"
               :layout-id="zoomedImageLayoutId(zoomedImage)"
             />
           </div>
