@@ -30,7 +30,7 @@ defineProps({
       v-if="actionIcon"
       :variant="actionVariant"
       size="icon"
-      class="animate-in fade-in-30 absolute top-2 right-2 hidden backdrop-blur-sm group-hover:flex"
+      class="animate-in fade-in-30 absolute top-2 right-2 backdrop-blur-xs not-[:where(.group):hover_*]:hidden"
       @click.stop="action?.()"
     >
       <Component :is="actionIcon" />
