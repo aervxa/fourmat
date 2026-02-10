@@ -119,7 +119,7 @@ function reset() {
   imagePaths.value = [];
   outputDir.value = "";
   toFormat.value = "";
-  transitioningImage.value = -1;
+  zoomedImageIndex.value = -1; // reset animation dialog state
 }
 
 /* File drag drop
@@ -154,37 +154,11 @@ const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
   .join(", ")
   .replace("and,", "and");
 
-const transitioningImage = ref(-1);
-const showDialog = ref(false);
-const imageTransitionName = "transitioning_image";
-async function transitionImage(i: number) {
-  /**
-   * if actual image is being transitioned, otherwise, it's a back transition,
-   * which would need to happen backwards, hence the setting after .finished
-   */
-
-  if (i >= 0) {
-    transitioningImage.value = i;
-    // wait for vue to actually update DOM
-    await nextTick();
-  }
-  async function transition() {
-    // transition code
-    showDialog.value = !showDialog.value;
-    // wait for vue to actually update DOM
-    await nextTick();
-  }
-  if (!document.startViewTransition) {
-    // Fallback for browsers that don't support the transitioning
-    transition();
-  } else {
-    document.startViewTransition(transition).finished.then(() => {
-      if (i < 0) {
-        transitioningImage.value = i;
-      }
-    });
-  }
-}
+// Animations via motion
+import { motion } from "motion-v";
+const MotionImageSquare = motion.create(ImageSquare);
+const zoomedImageIndex = ref(-1);
+const zoomedImageLayoutId = (index: number) => `image_grid_${index}`;
 </script>
 
 <template>
@@ -230,33 +204,26 @@ async function transitionImage(i: number) {
       >
         <!-- Image zoomed-in preview -->
         <div
-          v-if="showDialog"
-          @click="transitionImage(-1)"
+          v-if="zoomedImageIndex >= 0"
+          @click="zoomedImageIndex = -1"
           class="bg-background/40 absolute inset-0 z-10 flex cursor-pointer items-center-safe justify-center-safe backdrop-blur-xs"
         >
-          <ImageSquare
-            :src="imagePathsSrc[transitioningImage]"
-            :alt="`uploaded_image_${transitioningImage}`"
-            :delete-fn="
-              () => {
-                transitionImage(-1);
-              }
-            "
+          <MotionImageSquare
+            :src="imagePathsSrc[zoomedImageIndex]"
+            :alt="`zoomed_uploaded_image_${zoomedImageIndex}`"
             :action-icon="X"
             action-variant="outline"
-            :style="{
-              viewTransitionName: imageTransitionName,
-            }"
             class="max-h-full w-full max-w-96"
+            :layout-id="zoomedImageLayoutId(zoomedImageIndex)"
           />
         </div>
 
         <!-- Image grids -->
         <div
           class="grid size-full auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] gap-4 p-4"
-          :class="[showDialog ? 'overflow-hidden' : 'overflow-auto']"
+          :class="[zoomedImageIndex >= 0 ? 'overflow-hidden' : 'overflow-auto']"
         >
-          <ImageSquare
+          <MotionImageSquare
             v-for="(src, i) in imagePathsSrc"
             :key="src"
             :src
@@ -268,15 +235,9 @@ async function transitionImage(i: number) {
             "
             :action-icon="Trash2"
             action-variant="destructive"
-            @click="transitionImage(i)"
             class="cursor-pointer"
-            :class="[transitioningImage === i && showDialog && 'opacity-0']"
-            :style="[
-              transitioningImage === i &&
-                !showDialog && {
-                  viewTransitionName: imageTransitionName,
-                },
-            ]"
+            :layout-id="zoomedImageLayoutId(i)"
+            @click="zoomedImageIndex = i"
           />
           <!-- Select more images -->
           <div
