@@ -203,20 +203,32 @@ const zoomedImageLayoutId = (index: number) => `image_grid_${index}`;
         class="bg-card relative size-full rounded-xl"
       >
         <!-- Image zoomed-in preview -->
-        <div
-          v-if="zoomedImageIndex >= 0"
-          @click="zoomedImageIndex = -1"
-          class="bg-background/40 absolute inset-0 z-10 flex cursor-pointer items-center-safe justify-center-safe backdrop-blur-xs"
-        >
-          <MotionImageSquare
-            :src="imagePathsSrc[zoomedImageIndex]"
-            :alt="`zoomed_uploaded_image_${zoomedImageIndex}`"
-            :action-icon="X"
-            action-variant="outline"
-            class="max-h-full w-full max-w-96"
-            :layout-id="zoomedImageLayoutId(zoomedImageIndex)"
-          />
-        </div>
+        <AnimatePresence>
+          <div
+            v-if="zoomedImageIndex >= 0"
+            @click="zoomedImageIndex = -1"
+            class="absolute inset-0 z-10 flex cursor-pointer items-center-safe justify-center-safe"
+          >
+            <!-- Background backdrop -->
+            <motion.div
+              class="bg-background/40 absolute inset-0 backdrop-blur-xs"
+              :initial="{ opacity: 0 }"
+              :animate="{ opacity: 1 }"
+              :exit="{ opacity: 0 }"
+            >
+            </motion.div>
+
+            <MotionImageSquare
+              :src="imagePathsSrc[zoomedImageIndex]"
+              :alt="`zoomed_uploaded_image_${zoomedImageIndex}`"
+              :action-icon="X"
+              action-variant="outline"
+              :deleteFn="() => (zoomedImageIndex = -1)"
+              class="max-h-full w-full max-w-96"
+              :layout-id="zoomedImageLayoutId(zoomedImageIndex)"
+            />
+          </div>
+        </AnimatePresence>
 
         <!-- Image grids -->
         <div
