@@ -54,7 +54,7 @@ function pushImagePaths(paths: string[] | null) {
       });
     }
   } else {
-    toast.error("Please select at least one file");
+    toast.warning("No files were selected!");
   }
 }
 
