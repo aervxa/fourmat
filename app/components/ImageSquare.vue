@@ -12,7 +12,7 @@ defineProps({
 
 <template>
   <div
-    class="group relative aspect-square overflow-clip rounded-xl bg-cover bg-center"
+    class="group border-secondary relative aspect-square overflow-clip rounded-xl border-2 bg-cover bg-center shadow-xl"
     :style="{
       backgroundImage: `url(&quot;${src}&quot;)`,
     }"
