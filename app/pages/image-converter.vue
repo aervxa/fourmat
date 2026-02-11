@@ -142,7 +142,7 @@ onMounted(async () => {
         );
 
         // Set image paths IF dropped IN dropZone
-        if (dropZone.value?.contains(elm)) {
+        if (dropZone.value?.$el?.contains(elm)) {
           pushImagePaths(payload.paths);
         }
       }
@@ -173,9 +173,11 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
 <template>
   <main class="flex size-full flex-1 overflow-hidden max-md:flex-col">
     <!-- Title + Options Header (for small screens without sidebar) -->
-    <div
+    <motion.div
       v-show="BREAKPOINT"
       class="flex flex-wrap items-center-safe justify-between gap-4 p-4"
+      :initial="{ y: '-50%' }"
+      :animate="{ y: 0 }"
     >
       <p class="text-xl font-semibold">{{ TITLE }}</p>
 
@@ -202,7 +204,7 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
           <FolderInput v-else />
         </Button>
       </div>
-    </div>
+    </motion.div>
 
     <!-- Image zoomed-in preview -->
     <AnimatePresence>
@@ -235,7 +237,12 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
     </AnimatePresence>
 
     <!-- Image Selection/Viewer + drop-zone -->
-    <div ref="drop-zone" class="flex-1 gap-2 overflow-hidden p-4">
+    <motion.div
+      ref="drop-zone"
+      :initial="{ scale: 0.9 }"
+      :animate="{ scale: 1 }"
+      class="flex-1 gap-2 overflow-hidden p-4"
+    >
       <!-- Image preview -->
       <div
         v-if="imagePaths.length"
@@ -289,10 +296,15 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
           Supported EXTENSIONS: &nbsp; {{ EXTENSIONS_STR }}
         </p>
       </div>
-    </div>
+    </motion.div>
 
     <!-- Options "Bottom bar" (for small screens without sidebar) -->
-    <div v-show="BREAKPOINT" class="flex justify-between border-t p-4">
+    <motion.div
+      :initial="{ y: '50%' }"
+      :animate="{ y: 0 }"
+      v-show="BREAKPOINT"
+      class="flex justify-between border-t p-4"
+    >
       <!-- Select Format -->
       <Select v-model="toFormat">
         <SelectTrigger>
@@ -313,10 +325,12 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
         <Cpu />
         Fourmat
       </Button>
-    </div>
+    </motion.div>
 
     <!-- Options "Sidebar" -->
-    <div
+    <motion.div
+      :initial="{ x: '50%' }"
+      :animate="{ x: 0 }"
       class="flex w-2xs flex-col gap-6 overflow-auto border-l p-4 pb-8 max-md:hidden lg:w-xs xl:w-sm"
     >
       <p class="text-xl font-bold">{{ TITLE }}</p>
@@ -407,11 +421,11 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
           Fourmat
         </Button>
       </div>
-    </div>
+    </motion.div>
+    <Toaster
+      :position="BREAKPOINT ? 'top-center' : 'bottom-right'"
+      richColors
+      :theme="$colorMode.value == 'dark' ? 'dark' : 'light'"
+    />
   </main>
-  <Toaster
-    :position="BREAKPOINT ? 'top-center' : 'bottom-right'"
-    richColors
-    :theme="$colorMode.value == 'dark' ? 'dark' : 'light'"
-  />
 </template>
