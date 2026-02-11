@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Image } from "lucide-vue-next";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 const ROUTES = [
   {
@@ -23,8 +24,13 @@ const ROUTES = [
       }"
     >
       Built by
-      <!-- TODO Open link in native browser -->
-      <a href="https://www.github.com/aervxa" target="_blank">zorvi</a>
+      <Button
+        variant="link"
+        class="-ml-1 px-2"
+        @click="openUrl('https://github.com/aervxa')"
+      >
+        zorvi
+      </Button>
     </p>
     <!-- Grid of all tools -->
     <div
