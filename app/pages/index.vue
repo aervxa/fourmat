@@ -1,15 +1,7 @@
 <script setup lang="ts">
-import { Image } from "lucide-vue-next";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { motion } from "motion-v";
-
-const ROUTES = [
-  {
-    title: "Image Converter",
-    href: "/image-converter",
-    icon: Image,
-  },
-];
+import { ROUTES } from "~/tools";
 </script>
 
 <template>
