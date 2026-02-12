@@ -157,7 +157,7 @@ onUnmounted(() => {
 // CONSTANTS
 const TITLE = "Image format converter";
 const { width } = useWindowSize();
-const BREAKPOINT = computed(() => width.value <= 768);
+const BREAKPOINT = computed(() => width.value <= 1024);
 const EXTENSIONS = ["AVIF", "BMP", "GIF", "JPG", "JPEG", "PNG", "WebP"];
 const EXTENSIONS_STR = EXTENSIONS.toSpliced(-1, 0, "and")
   .join(", ")
@@ -171,7 +171,10 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
 </script>
 
 <template>
-  <main class="flex size-full flex-1 overflow-hidden max-md:flex-col">
+  <main
+    class="flex size-full flex-1 overflow-hidden"
+    :class="[BREAKPOINT && 'flex-col']"
+  >
     <!-- Title + Options Header (for small screens without sidebar) -->
     <motion.div
       v-show="BREAKPOINT"
@@ -331,7 +334,8 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
     <motion.div
       :initial="{ x: '50%' }"
       :animate="{ x: 0 }"
-      class="flex w-2xs flex-col gap-6 overflow-auto border-l p-4 pb-8 max-md:hidden lg:w-xs xl:w-sm"
+      class="flex w-2xs flex-col gap-6 overflow-auto border-l p-4 pb-8 lg:w-xs xl:w-sm"
+      :class="[BREAKPOINT && 'hidden']"
     >
       <p class="text-xl font-bold">{{ TITLE }}</p>
 
