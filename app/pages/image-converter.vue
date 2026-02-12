@@ -178,7 +178,7 @@ const zoomedImageLayoutId = (src?: string) => `image_grid_${src}`;
     <!-- Title + Options Header (for small screens without sidebar) -->
     <motion.div
       v-show="BREAKPOINT"
-      class="flex flex-wrap items-center-safe justify-between gap-4 p-4"
+      class="flex flex-wrap items-center-safe justify-between gap-4 p-4 pb-0"
       :initial="{ y: '-50%' }"
       :animate="{ y: 0 }"
     >
