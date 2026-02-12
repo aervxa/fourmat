@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { motion } from "motion-v";
-import { ROUTES } from "~/tools";
+import { ROUTES } from "@/tools";
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ButtonVariants } from "~/components/ui/button";
+import type { ButtonVariants } from "@/components/ui/button";
 
 defineProps({
   src: String,

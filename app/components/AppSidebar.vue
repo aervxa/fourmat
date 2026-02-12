@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Home } from "lucide-vue-next";
-import { ROUTES } from "~/tools";
+import { ROUTES } from "@/tools";
 </script>
 
 <template>

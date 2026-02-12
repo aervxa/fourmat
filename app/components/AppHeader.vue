@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSidebar } from "~/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 import { PanelLeft, X } from "lucide-vue-next";
 
 const { toggleSidebar } = useSidebar();
