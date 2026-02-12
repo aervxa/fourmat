@@ -10,7 +10,7 @@
     <div class="flex flex-1 overflow-hidden">
       <AppSidebar />
 
-      <SidebarInset class="rounded-4xl mt-0!">
+      <SidebarInset class="border-border/40 mt-0! border">
         <slot />
       </SidebarInset>
     </div>
