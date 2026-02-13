@@ -4,7 +4,12 @@ import { ROUTES } from "@/tools";
 </script>
 
 <template>
-  <Sidebar class="top-(--header-height) pt-0!" variant="inset">
+  <Sidebar
+    class="top-(--header-height) max-h-[calc(100dvh-var(--header-height))] pt-0!"
+    variant="inset"
+  >
+    <Separator class="mb-2" />
+
     <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem>
@@ -17,8 +22,6 @@ import { ROUTES } from "@/tools";
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>
-
-    <Separator />
 
     <SidebarContent>
       <SidebarGroup>
