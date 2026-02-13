@@ -5,10 +5,11 @@ import { ROUTES } from "@/tools";
 
 <template>
   <Sidebar
-    class="top-(--header-height) max-h-[calc(100dvh-var(--header-height))] pt-0!"
+    class="top-(--header-height) max-h-[calc(100dvh-var(--header-height))] px-0! pt-0!"
     variant="inset"
+    collapsible="icon"
   >
-    <Separator class="mb-2" />
+    <Separator class="max-w-[calc(100%-(var(--spacing)*4))] self-center" />
 
     <SidebarHeader>
       <SidebarMenu>

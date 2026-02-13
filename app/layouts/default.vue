@@ -2,7 +2,7 @@
 
 <template>
   <SidebarProvider
-    class="flex max-h-dvh flex-col [--header-height:calc(--spacing(10))]"
+    class="flex max-h-dvh flex-col [--header-height:calc(--spacing(10))] [--sidebar-width-icon:2rem]!"
   >
     <!-- Header -->
     <AppHeader />
@@ -10,7 +10,7 @@
     <div class="flex flex-1 overflow-hidden">
       <AppSidebar />
 
-      <SidebarInset class="border-border/40 mt-0! border">
+      <SidebarInset class="border-border/40 mt-0! ml-0! border">
         <slot />
       </SidebarInset>
     </div>
