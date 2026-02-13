@@ -9,7 +9,9 @@ import { ROUTES } from "@/tools";
     variant="inset"
     collapsible="icon"
   >
-    <Separator class="max-w-[calc(100%-(var(--spacing)*4))] self-center" />
+    <Separator
+      class="max-w-[calc(100%-(var(--spacing)*4))] self-center opacity-80"
+    />
 
     <SidebarHeader>
       <SidebarMenu>
@@ -23,16 +25,23 @@ import { ROUTES } from "@/tools";
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>
+    <Separator
+      class="max-w-[calc(100%-(var(--spacing)*4))] self-center opacity-80"
+    />
 
     <SidebarContent>
       <SidebarGroup>
         <SidebarGroupLabel>Tools</SidebarGroupLabel>
-        <SidebarMenuButton as-child v-for="route in ROUTES">
-          <LazyNuxtLink :href="route.href">
-            <Component :is="route.icon" />
-            <span>{{ route.title }}</span>
-          </LazyNuxtLink>
-        </SidebarMenuButton>
+        <SidebarMenu>
+          <SidebarMenuItem v-for="route in ROUTES">
+            <SidebarMenuButton as-child>
+              <LazyNuxtLink :href="route.href">
+                <Component :is="route.icon" />
+                <span>{{ route.title }}</span>
+              </LazyNuxtLink>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarGroup>
     </SidebarContent>
   </Sidebar>

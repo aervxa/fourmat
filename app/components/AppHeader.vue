@@ -9,7 +9,7 @@ import { X, ChevronLeft, ChevronRight } from "lucide-vue-next";
         <SidebarTrigger />
       </div>
 
-      <Separator orientation="vertical" class="max-h-1/2" />
+      <Separator orientation="vertical" class="max-h-1/2 opacity-80" />
 
       <div class="ml-2 flex gap-1">
         <!-- Forward and Back -->
