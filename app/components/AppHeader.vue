@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { X, ChevronLeft, ChevronRight } from "lucide-vue-next";
+import { X, ChevronLeft, ChevronRight, RotateCcw } from "lucide-vue-next";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { isDev } from "~/lib/utils";
 
 const route = useRoute();
 const canGoBackward = ref(false);
@@ -47,6 +48,16 @@ const router = useRouter();
         >
           <ChevronRight class="size-6" />
           <span class="sr-only">Go forward</span>
+        </Button>
+        <Button
+          v-if="isDev"
+          variant="destructive"
+          size="icon"
+          class="size-7"
+          @click="router.go(0)"
+        >
+          <RotateCcw class="size-4.25" />
+          <span class="sr-only">Reload</span>
         </Button>
       </div>
     </div>
