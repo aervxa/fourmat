@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { X, ChevronLeft, ChevronRight } from "lucide-vue-next";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 const route = useRoute();
 const canGoBackward = ref(false);
@@ -50,8 +51,13 @@ const router = useRouter();
       </div>
     </div>
     <div class="flex aspect-square items-center justify-center">
-      <!-- TODO: Close app -->
-      <Button variant="secondary" size="icon" class="size-6 rounded-full">
+      <!-- Close app -->
+      <Button
+        variant="secondary"
+        size="icon"
+        class="size-6 rounded-full"
+        @click="getCurrentWindow().close()"
+      >
         <X class="size-3 stroke-4" />
         <span class="sr-only">Close app</span>
       </Button>
