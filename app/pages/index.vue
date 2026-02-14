@@ -41,7 +41,7 @@ import { ROUTES } from "@/tools";
     </motion.p>
     <!-- Grid of all tools -->
     <div
-      class="grid flex-1 auto-rows-min grid-cols-[repeat(auto-fill,minmax(256px,1fr))] gap-4 p-8"
+      class="grid flex-1 auto-rows-min grid-cols-[repeat(auto-fill,minmax(192px,1fr))] justify-center gap-4 p-8 sm:grid-cols-[repeat(auto-fill,minmax(224px,1fr))]"
     >
       <LazyNuxtLink v-for="route in ROUTES" :href="route.href" class="contents">
         <motion.div
@@ -53,8 +53,10 @@ import { ROUTES } from "@/tools";
           }"
           class="flex aspect-square size-full flex-col gap-4 rounded-2xl border-2 p-4"
         >
-          <Component :is="route.icon" class="size-full p-4 opacity-40" />
-          <p class="text-center text-2xl font-semibold">{{ route.title }}</p>
+          <Component :is="route.icon" class="size-full p-1 opacity-40 sm:p-2" />
+          <p class="text-center text-lg font-semibold sm:text-xl">
+            {{ route.title }}
+          </p>
         </motion.div>
       </LazyNuxtLink>
     </div>
