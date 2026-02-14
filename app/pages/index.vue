@@ -5,7 +5,7 @@ import { ROUTES } from "@/tools";
 </script>
 
 <template>
-  <main class="flex size-full flex-col">
+  <main class="flex size-full flex-col overflow-auto">
     <motion.p
       :initial="{
         y: '-100%',
