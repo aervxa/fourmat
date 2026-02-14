@@ -12,6 +12,8 @@
   "app": {
     "windows": [
       {
+        "label": "main",
+        "visible": false,
         "title": "4mat",
         "width": 1200,
         "height": 640,
