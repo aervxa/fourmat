@@ -1,5 +1,19 @@
 <script setup lang="ts">
 import { X, ChevronLeft, ChevronRight } from "lucide-vue-next";
+
+const route = useRoute();
+const canGoBackward = ref(false);
+const canGoForward = ref(false);
+watch(
+  () => route.fullPath,
+  () => {
+    canGoBackward.value = !!window.history.state.back;
+    canGoForward.value = !!window.history.state.forward;
+  },
+  { immediate: true },
+);
+
+const router = useRouter();
 </script>
 
 <template>
@@ -13,12 +27,23 @@ import { X, ChevronLeft, ChevronRight } from "lucide-vue-next";
 
       <div class="ml-2 flex gap-1">
         <!-- Forward and Back -->
-        <!-- TODO: Get it to actually work -->
-        <Button variant="ghost" size="icon" class="size-7">
+        <Button
+          variant="ghost"
+          size="icon"
+          class="size-7"
+          :disabled="!canGoBackward"
+          @click="router.back()"
+        >
           <ChevronLeft class="size-6" />
           <span class="sr-only">Go back</span>
         </Button>
-        <Button variant="ghost" size="icon" class="size-7">
+        <Button
+          variant="ghost"
+          size="icon"
+          class="size-7"
+          :disabled="!canGoForward"
+          @click="router.forward()"
+        >
           <ChevronRight class="size-6" />
           <span class="sr-only">Go forward</span>
         </Button>
